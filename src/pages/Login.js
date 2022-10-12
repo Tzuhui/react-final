@@ -1,5 +1,3 @@
-const Login = () => {
-  return 'Login'
-}
+const Login = () => 'Login';
 
 export default Login;
