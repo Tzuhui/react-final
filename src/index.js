@@ -8,6 +8,8 @@ import './index.css';
 import App from './App';
 import Login from './pages/Login';
 import reportWebVitals from './reportWebVitals';
+import 'bootstrap/dist/js/bootstrap';
+import './assets/scss/all.scss';
 
 const router = createHashRouter([
   {
