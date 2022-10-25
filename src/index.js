@@ -4,12 +4,19 @@ import {
   createHashRouter,
   RouterProvider,
 } from 'react-router-dom';
+import axios from 'axios';
+import 'material-icons/iconfont/material-icons.css';
 import './index.css';
 import App from './App';
 import Login from './pages/Login';
+import AdminProducts from './pages/Admin/Products';
+import AdminCoupons from './pages/Admin/Coupons';
+import AdminOrders from './pages/Admin/Orders';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/js/bootstrap';
 import './assets/scss/all.scss';
+
+axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 
 const router = createHashRouter([
   {
@@ -30,19 +37,18 @@ const router = createHashRouter([
   },
   {
     path: '/admin',
-    element: '',
     children: [
       {
         path: 'products',
-        element: '',
+        element: <AdminProducts />,
       },
       {
         path: 'coupons',
-        element: '',
+        element: <AdminCoupons />,
       },
       {
         path: 'orders',
-        element: '',
+        element: <AdminOrders />,
       },
     ],
   },
