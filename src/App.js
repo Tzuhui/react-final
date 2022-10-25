@@ -1,60 +1,31 @@
 import React from 'react';
+import Header from './components/Header';
 // import logo from './logo.svg';
 // import './App.css';
 
 function App() {
   return (
     <div>
-      <div className="bg-white sticky-top">
-        <div className="container">
-          <nav className="navbar px-0 navbar-expand-lg navbar-light bg-white">
-            <a
-              className="navbar-brand position-absolute"
-              href="/"
-              style={{ left: '50%', transform: 'translate(-50%, -50%)', top: '50%' }}
-            >
-              Navbar
-            </a>
-            <button type="button" className="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-              <span className="navbar-toggler-icon" />
-            </button>
-            <div className="collapse navbar-collapse bg-white custom-header-md-open" id="navbarNav">
-              <ul className="navbar-nav">
-                <li className="nav-item active">
-                  <a className="nav-link ps-0" href="./product.html">Lorem ipsum</a>
-                </li>
-                <li className="nav-item">
-                  <a className="nav-link" href="./detail.html">Lorem ipsum</a>
-                </li>
-              </ul>
-            </div>
-            <div className="d-flex">
-              {/* <a href="#"><i className="fas fa-heart me-5" /></a>
-              <a href="./cart-2.html"><i className="fas fa-shopping-cart" /></a> */}
-            </div>
-          </nav>
-        </div>
-      </div>
+      <Header />
       <div className="container">
         <div className="row flex-md-row-reverse flex-column">
           <div className="col-md-6">
             <img
-              src="https://images.unsplash.com/photo-1526038335545-4b96864eaee7?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1867&q=80"
+              src="https://images.unsplash.com/photo-1597075561373-cf8898ec7290?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80"
               alt=""
               className="img-fluid"
             />
           </div>
           <div className="col-md-6 d-flex flex-column justify-content-center mt-md-0 mt-3">
-            <h2 className="fw-bold">Lorem ipsum dolor sit</h2>
+            <h2 className="fw-bold">為您帶來更多美食佳餚。</h2>
             <h5 className="font-weight-normal text-muted mt-2">
-              Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-              nonumy eirmod tempor
+              我們有專業的外送夥伴，早餐、午餐、晚餐、宵夜及下午茶，通通都可以在 HEX EATS 點。
             </h5>
             <div className="input-group mb-0 mt-4">
               <input type="text" className="form-control rounded-0" placeholder="" />
               <div className="input-group-append">
                 <button type="button" className="btn btn-dark rounded-0" id="search">
-                  Lorem ipsum
+                  找美食
                 </button>
               </div>
             </div>

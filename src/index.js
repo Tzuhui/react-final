@@ -15,6 +15,8 @@ import AdminOrders from './pages/Admin/Orders';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/js/bootstrap';
 import './assets/scss/all.scss';
+import Products from './pages/Products';
+import ProductDetail from './pages/ProductDetail';
 
 axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -29,7 +31,11 @@ const router = createHashRouter([
   },
   {
     path: '/products',
-    element: 'products',
+    element: <Products />,
+  },
+  {
+    path: '/product/:productId',
+    element: <ProductDetail />,
   },
   {
     path: '/cart',
