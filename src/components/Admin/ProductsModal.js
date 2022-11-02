@@ -1,7 +1,9 @@
 import axios from 'axios';
 import React, { useEffect } from 'react';
 
-function ProductsModal({ type, data, refresh }) {
+function ProductsModal({
+  type, data, refresh, close,
+}) {
   const [state, setState] = React.useState({
     title: '',
     category: '',
@@ -18,7 +20,9 @@ function ProductsModal({ type, data, refresh }) {
   useEffect(() => {
     if (type === 'edit') {
       setState((preState) => ({ ...preState, ...data }));
-    } else {
+    }
+    const myModalEl = document.getElementById('productModal');
+    myModalEl.addEventListener('hidden.bs.modal', () => {
       setState((preState) => ({
         ...preState,
         title: '',
@@ -33,7 +37,7 @@ function ProductsModal({ type, data, refresh }) {
         imagesUrl: [
         ],
       }));
-    }
+    });
   }, [type, data.id]);
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -64,7 +68,7 @@ function ProductsModal({ type, data, refresh }) {
             <h1 className="modal-title fs-5" id="exampleModalLabel">
               {type === 'create' ? '建立新商品' : '編輯'}
             </h1>
-            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+            <button type="button" className="btn-close" onClick={close} aria-label="Close" />
           </div>
           <div className="modal-body">
             <div className="row">
@@ -143,7 +147,7 @@ function ProductsModal({ type, data, refresh }) {
             </div>
           </div>
           <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            <button type="button" className="btn btn-secondary" onClick={close}>關閉</button>
             <button type="button" className="btn btn-primary" onClick={submit}>儲存</button>
           </div>
         </div>

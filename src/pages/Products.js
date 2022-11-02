@@ -87,15 +87,15 @@ function Products() {
                           {d.price}
                         </p>
                         {
-                          d.origin_price && (
-                          <p className="small text-muted mt-2">
-                            <del>
-                              (NT$
-                              {' '}
-                              {d.origin_price}
-                              )
-                            </del>
-                          </p>
+                          !!d.origin_price && (
+                            <p className="small text-muted mt-2">
+                              <del>
+                                (NT$
+                                {' '}
+                                {d.origin_price}
+                                )
+                              </del>
+                            </p>
                           )
                         }
                       </div>

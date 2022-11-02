@@ -16,7 +16,7 @@ function DeleteModal({
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" onClick={close} data-bs-dismiss="modal">取消</button>
-            <button type="button" className="btn btn-primary" onClick={check}>確認刪除</button>
+            <button type="button" className="btn btn-danger" onClick={check}>確認刪除</button>
           </div>
         </div>
       </div>

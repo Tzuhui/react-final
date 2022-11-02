@@ -1,5 +1,6 @@
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { Modal } from 'bootstrap';
 import Dashboard from '../../components/Admin/Dashboard';
 import ProductsModal from '../../components/Admin/ProductsModal';
 import DeleteModal from '../../components/DeleteModal';
@@ -29,9 +30,21 @@ function Products() {
   const changePage = (pageNum) => {
     getData(pageNum);
   };
+  const productModal = useRef('');
+  const deleteModal = useRef('');
   useEffect(() => {
     getData();
+    productModal.current = new Modal('#productModal');
+    deleteModal.current = new Modal('#deleteModal');
   }, []);
+  const openModal = (type, item) => {
+    productModal.current.show();
+    setState({ type, data: item });
+  };
+  const closeModal = () => {
+    productModal.current.hide();
+    setState({ type: '', data: {} });
+  };
   const column = [{
     name: '分類',
     key: 'category',
@@ -59,6 +72,7 @@ function Products() {
     }));
   };
   const openDelete = (id, name) => {
+    deleteModal.current.show();
     setDeleteData((preDelete) => ({
       ...preDelete,
       open: true,
@@ -71,6 +85,7 @@ function Products() {
     if (res.data.success) {
       getData();
     }
+    deleteModal.current.hide();
   };
   return (
     <Dashboard>
@@ -86,15 +101,19 @@ function Products() {
       <div className="p-3">
         <h3>產品列表</h3>
         <hr />
-        <ProductsModal type={state.type} data={state.data} refresh={getData} />
+        <ProductsModal
+          type={state.type}
+          data={state.data}
+          refresh={() => {
+            getData();
+            closeModal();
+          }}
+          close={closeModal}
+        />
         <button
           type="button"
           className="btn btn-primary btn-sm"
-          data-bs-toggle="modal"
-          data-bs-target="#productModal"
-          onClick={() => {
-            setState({ type: 'create', data: {} });
-          }}
+          onClick={() => { openModal('create', {}); }}
         >
           建立新商品
         </button>
@@ -120,18 +139,14 @@ function Products() {
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
-                      data-bs-toggle="modal"
-                      data-bs-target="#productModal"
                       onClick={() => {
-                        setState({ type: 'edit', data: d });
+                        openModal('edit', d);
                       }}
                     >
                       編輯
                     </button>
                     <button
                       type="button"
-                      data-bs-toggle="modal"
-                      data-bs-target="#deleteModal"
                       className="btn btn-outline-danger btn-sm ms-2"
                       onClick={() => { openDelete(d.id, d.title); }}
                     >
@@ -179,5 +194,4 @@ function Products() {
     </Dashboard>
   );
 }
-
 export default Products;
