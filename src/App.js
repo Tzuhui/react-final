@@ -58,7 +58,7 @@ function App() {
                 />
                 <div className="card-body p-0">
                   <h4 className="mb-0 mt-4">{p.title}</h4>
-                  <div className="d-flex justify-content-between mt-3">
+                  <div className="d-flex justify-content-between  align-items-start mt-3">
                     <p className="card-text text-muted mb-0 w-75">
                       {p.description}
                     </p>
