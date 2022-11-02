@@ -3,54 +3,58 @@ import axios from 'axios';
 
 import { NavLink } from 'react-router-dom';
 import Header from '../components/Header';
+import Loading from '../components/Loading';
 
 function Products() {
+  const categoryList = ['飲料', '甜點', '熱食', '健康便當'];
   const [data, setData] = React.useState([]);
   const [page, setPage] = React.useState({
-    category: '',
     current_page: 1,
     has_next: false,
     has_pre: false,
     total_pages: 1,
   });
-  const getData = async (p = 1) => {
-    // setState((prev) => ({ ...prev, loading: true }));
-    const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/products?page=${p}`);
+  const [state, setState] = React.useState({
+    category: '',
+    loading: true,
+  });
+  const getData = async (p = 1, category = '') => {
+    setState((prev) => ({ ...prev, loading: true }));
+    const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/products?page=${p}&category=${category}`);
     setData(res.data.products);
     setPage(res.data.pagination);
-    // setState((prev) => ({ ...prev, loading: false }));
+    setState((prev) => ({ ...prev, loading: false }));
+  };
+  const handleCategoryChange = (value) => {
+    setState((prev) => ({ ...prev, category: value === '全部' ? '' : value }));
   };
   useEffect(() => {
-    getData();
-  }, []);
+    getData(1, state.category);
+  }, [state.category]);
   const changePage = (pageNum) => {
-    getData(pageNum);
+    getData(pageNum, state.category);
   };
   return (
     <>
+      {
+        state.loading && <Loading />
+      }
       <Header />
       <nav className="navbar navbar-expand-lg navbar-light justify-content-center border border-start-0 border-end-0 border-top border-bottom">
         <div className="navbar-nav flex-row overflow-auto navbar-custom-scroll">
-          <a className="nav-item nav-link text-nowrap px-2" href="/">
-            飲料
-          </a>
-          <a className="nav-item nav-link text-nowrap px-2" href="/">
-            甜點
-          </a>
-          <a className="nav-item nav-link text-nowrap px-2 active" href="/">
+          <a onClick={(e) => { e.preventDefault(); handleCategoryChange('全部'); }} className={`nav-item nav-link text-nowrap px-2 ${state.category === '' && 'active'}`} href="/">
             全部
-            {' '}
-            {/* <span className="sr-only">(current)</span> */}
           </a>
-          <a className="nav-item nav-link text-nowrap px-2" href="/">
-            熱食
-          </a>
-          <a className="nav-item nav-link text-nowrap px-2" href="/">
-            健康便當
-          </a>
+          {
+            categoryList.map((c) => (
+              <a onClick={(e) => { e.preventDefault(); handleCategoryChange(c); }} className={`nav-item nav-link text-nowrap px-2 ${state.category === c && 'active'}`} href="/">
+                {c}
+              </a>
+            ))
+          }
         </div>
       </nav>
-      <div className="container mt-md-5 mt-3 mb-7">
+      <div className="container mt-md-5 mt-3 mb-7" style={{ minHeight: 'calc(100vh - 300px)' }}>
         <div className="row">
           {
             data.map((d) => (
@@ -76,11 +80,25 @@ function Products() {
                       <p className="card-text text-muted mb-0">
                         {d.description}
                       </p>
-                      <p className="text-muted mt-2">
-                        NT$
-                        {' '}
-                        {d.price}
-                      </p>
+                      <div className="d-flex align-items-center">
+                        <p className="mt-2 me-2">
+                          NT$
+                          {' '}
+                          {d.price}
+                        </p>
+                        {
+                          d.origin_price && (
+                          <p className="small text-muted mt-2">
+                            <del>
+                              (NT$
+                              {' '}
+                              {d.origin_price}
+                              )
+                            </del>
+                          </p>
+                          )
+                        }
+                      </div>
                     </div>
                   </div>
                 </NavLink>
