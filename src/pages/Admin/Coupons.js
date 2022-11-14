@@ -108,17 +108,17 @@ function Products() {
           <thead>
             <tr>
               {
-                column.map((c) => <th scope="col">{c.name}</th>)
+                column.map((c, i) => <th key={`tr_${i + 1}`} scope="col">{c.name}</th>)
               }
               <th scope="col">編輯</th>
             </tr>
           </thead>
           <tbody>
             {
-              data.length > 0 && data.map((d) => (
-                <tr>
+              data.length > 0 && data.map((d, i) => (
+                <tr key={`coupon_1_${i + 1}`}>
                   {
-                    column.map((c) => <td>{d[c.key]}</td>)
+                    column.map((c, index) => <td key={`coupon_2_${index + 1}`}>{d[c.key]}</td>)
                   }
                   <td>
                     <button
@@ -166,9 +166,7 @@ function Products() {
                     }}
                   >
                     {i + 1}
-
                   </a>
-
                 </li>
               ))
             }

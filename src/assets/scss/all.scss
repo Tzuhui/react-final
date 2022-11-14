@@ -2,3 +2,30 @@
 @import "bootstrap/scss/functions";
 @import "./helpers/_variables.scss";
 @import "bootstrap/scss/bootstrap";
+
+.cart-notify {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #c02e2e;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: -5px;
+  right: -10px;
+  color: white;
+}
+.cart-count {
+  width: 24px;
+  height: 24px;
+  background: lightgray;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+}
+.form-control.error {
+  border: 1px solid #dc3545;
+}

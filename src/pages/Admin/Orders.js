@@ -32,24 +32,6 @@ function Products() {
   useEffect(() => {
     getData();
   }, []);
-  const column = [{
-    name: '訂單編號',
-    key: 'category',
-  },
-  {
-    name: '付款狀態',
-    key: 'title',
-  }, {
-    name: '付款時間',
-    key: 'price',
-  },
-  {
-    name: '留言',
-    key: 'price',
-  }, {
-    name: '付款方式',
-    key: 'price',
-  }];
 
   // 刪除
   const [deleteData, setDeleteData] = React.useState({
@@ -97,9 +79,11 @@ function Products() {
         <table className="table">
           <thead>
             <tr>
-              {
-                column.map((c) => <th scope="col">{c.name}</th>)
-              }
+              <th scope="col">訂單編號</th>
+              <th scope="col">付款狀態</th>
+              <th scope="col">付款時間</th>
+              <th scope="col">留言</th>
+              <th scope="col">付款方式</th>
               <th scope="col">訂單商品</th>
               <th scope="col">訂購人資訊</th>
               <th scope="col">修改訂單</th>
@@ -109,10 +93,18 @@ function Products() {
             {
               data.length > 0 && data.map((d) => (
                 <tr>
-                  {
-                    column.map((c) => <td>{d[c.key]}</td>)
-                  }
-                  <td>{d.is_enabled ? '啟用' : '未啟用'}</td>
+                  <td>{d.id}</td>
+                  <td>{d.is_paid ? '付款完成' : '未付款'}</td>
+                  <td>{new Date(d.paid_date * 1000).toLocaleString('sv-DE')}</td>
+                  <td>{d.user?.message}</td>
+                  <td>{d.user?.payment}</td>
+                  <td>
+                    <button className="btn btn-sm btn-outline-primary" type="button">查看</button>
+                  </td>
+                  <td>
+                    {d.user?.name}
+                    {`(${d.user?.email})`}
+                  </td>
                   <td>
                     <button
                       type="button"

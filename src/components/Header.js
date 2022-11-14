@@ -1,7 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import axios from 'axios';
 
-function Header() {
+function Header({ cartChange }) {
+  const [state, setState] = useState({
+    cartLength: 0,
+    carts: [],
+  });
+  const getCart = async () => {
+    const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/cart`);
+    setState((prev) => ({ ...prev, cartLength: res.data.data.carts.length }));
+    setState((prev) => ({ ...prev, carts: res.data.data.carts }));
+  };
+  useEffect(() => {
+    getCart();
+  }, []);
+  useEffect(() => {
+    if (cartChange) {
+      getCart();
+    }
+  }, [cartChange]);
   return (
     <div className="bg-white sticky-top">
       <div className="container">
@@ -29,8 +47,64 @@ function Header() {
             </ul>
           </div>
           <div className="d-flex">
-            {/* <a href="#"><i className="fas fa-heart me-5" /></a>
-        <a href="./cart-2.html"><i className="fas fa-shopping-cart" /></a> */}
+            {/* <a href="#"><i className="fas fa-heart me-5" /></a> */}
+            <div className="dropdown">
+              <a href="/" className="link-dark position-relative" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                <span className="material-icons" style={{ fontSize: 32 }}>
+                  shopping_bag
+                </span>
+                <span className="cart-notify">{state.cartLength}</span>
+              </a>
+              <ul
+                className="dropdown-menu dropdown-menu-end"
+                aria-labelledby="dropdownMenuButton1"
+                style={{ minWidth: '400px', maxHeight: '250px', overflow: 'auto' }}
+              >
+                <div className="d-flex justify-content-between align-items-center px-3">
+                  <h6 className="h6 mb-0">
+                    購物車清單
+                  </h6>
+                  <NavLink
+                    to="/orders"
+                    className="btn btn-sm btn-primary"
+                  >
+                    我要結帳
+                  </NavLink>
+                </div>
+                <hr className="mt-2 mb-0" />
+                <p className="text-center m-0 small">小提醒：前往結帳頁面可以再套用優惠卷哦！</p>
+                <hr className="my-0" />
+                <table className="table">
+                  <tbody>
+                    {
+                      state.carts.map((c) => (
+                        <tr key={c.product.id}>
+                          <td className="align-middle">
+                            <button
+                              type="button"
+                              className="btn btn-outline-danger btn-sm"
+                            >
+                              <span className="material-icons">
+                                delete
+                              </span>
+                            </button>
+                          </td>
+                          <td className="align-middle">
+                            {c.product.title}
+                          </td>
+                          <td className="align-middle">{c.qty}</td>
+                          <td className="align-middle text-right">
+                            NT$
+                            {' '}
+                            {parseInt(c.final_total, 10)}
+                          </td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              </ul>
+            </div>
           </div>
         </nav>
       </div>

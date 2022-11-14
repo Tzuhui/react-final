@@ -16,7 +16,7 @@ function Products() {
   });
   const [state, setState] = React.useState({
     category: '',
-    loading: true,
+    loading: false,
   });
   const getData = async (p = 1, category = '') => {
     setState((prev) => ({ ...prev, loading: true }));
@@ -47,7 +47,7 @@ function Products() {
           </a>
           {
             categoryList.map((c) => (
-              <a onClick={(e) => { e.preventDefault(); handleCategoryChange(c); }} className={`nav-item nav-link text-nowrap px-2 ${state.category === c && 'active'}`} href="/">
+              <a key={`p_${c.id}`} onClick={(e) => { e.preventDefault(); handleCategoryChange(c); }} className={`nav-item nav-link text-nowrap px-2 ${state.category === c && 'active'}`} href="/">
                 {c}
               </a>
             ))
@@ -58,7 +58,7 @@ function Products() {
         <div className="row">
           {
             data.map((d) => (
-              <div className="col-md-3">
+              <div className="col-md-3" key={`product_${d.id}`}>
                 <NavLink className="link-dark text-decoration-none" to={`/product/${d.id}`}>
                   <div className="card border-0 mb-4 position-relative position-relative">
                     <img
@@ -115,7 +115,7 @@ function Products() {
             </li>
             {
               [...new Array(page.total_pages)].map((_, i) => (
-                <li className="page-item">
+                <li className="page-item" key={`page_${i + 1}`}>
                   <a
                     className={`page-link ${(i + 1 === page.current_page) && 'active'}`}
                     href="/"

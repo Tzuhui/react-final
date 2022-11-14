@@ -9,8 +9,9 @@ function Products() {
   const [data, setData] = React.useState([]);
   const [recommendData, setRecommendData] = React.useState([]);
   const [state, setState] = React.useState({
-
+    cartChange: false,
     loading: true,
+    qty: 1,
   });
   const getCategoryData = async (category) => {
     const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/products?page=1&category=${category}`);
@@ -27,9 +28,23 @@ function Products() {
   useEffect(() => {
     getData(productId);
   }, [productId]);
+
+  // 加入購物車
+  const addToCart = async () => {
+    await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/cart`, {
+      data: {
+        product_id: productId,
+        qty: parseInt(state.qty, 10),
+      },
+    });
+    setState((prev) => ({ ...prev, cartChange: true }));
+    setTimeout(() => {
+      setState((prev) => ({ ...prev, cartChange: false }));
+    }, 1000);
+  };
   return (
     <>
-      <Header />
+      <Header cartChange={state.cartChange} />
       {
         state.loading ? <Loading /> : (
           <div className="container">
@@ -40,7 +55,7 @@ function Products() {
                 <div className="my-4">
                   <div className="row">
                     {data.imagesUrl.map((i) => (
-                      <div className="col-md-4">
+                      <div className="col-md-4" key={`detail_${data.id}`}>
                         <img src={i || 'https://images.unsplash.com/photo-1502743780242-f10d2ce370f3?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1916&amp;q=80'} alt="" className="img-fluid mt-4" style={{ height: '150px', objectFit: 'cover' }} />
                       </div>
                     ))}
@@ -69,9 +84,15 @@ function Products() {
                   {data.price}
                 </h4>
                 <div className="my-2">
-                  <input type="text" className="form-control text-center my-auto shadow-none" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" value="1" />
+                  <input type="text" className="form-control text-center my-auto shadow-none" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" value={state.qty} onChange={(e) => { setState((prev) => ({ ...prev, qty: e.target.value })); }} />
                 </div>
-                <a href="./checkout.html" className="btn btn-dark btn-block rounded-0 w-100">加入購物車</a>
+                <button
+                  type="button"
+                  className="btn btn-dark btn-block rounded-0 w-100"
+                  onClick={addToCart}
+                >
+                  加入購物車
+                </button>
               </div>
             </div>
             <hr />
@@ -80,7 +101,7 @@ function Products() {
               <div className="row">
                 {
             recommendData.map((d) => (
-              <div className="col-md-4 mt-md-4">
+              <div className="col-md-4 mt-md-4" key={`recommend_${d.id}`}>
                 <div className="card border-0 mb-4 position-relative position-relative">
                   <img
                     src={d.imageUrl}

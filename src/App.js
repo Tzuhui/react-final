@@ -10,10 +10,8 @@ function App() {
   const getData = async (p = 1) => {
     const category = ['甜點', '熱食'];
     const random = category[Math.floor(Math.random() * category.length)];
-    // setState((prev) => ({ ...prev, loading: true }));
     const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/products?page=${p}&category=${random}`);
     setData(res.data.products.slice(0, 3));
-    // setState((prev) => ({ ...prev, loading: false }));
   };
   useEffect(() => {
     getData();
@@ -48,7 +46,7 @@ function App() {
         <h2 className="fw-bold mt-5">熱門美食</h2>
         <div className="row mt-3">
           {data.map((p) => (
-            <div className="col-md-4 mt-md-4">
+            <div className="col-md-4 mt-md-4" key={`hot_food_${p.id}`}>
               <div className="card border-0 mb-4 position-relative position-relative">
                 <img
                   src={p.imageUrl}
