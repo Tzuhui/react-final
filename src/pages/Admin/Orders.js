@@ -1,5 +1,6 @@
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { Modal } from 'bootstrap';
 import Dashboard from '../../components/Admin/Dashboard';
 // import ProductsModal from '../../components/Admin/ProductsModal';
 import DeleteModal from '../../components/DeleteModal';
@@ -29,36 +30,42 @@ function Products() {
   const changePage = (pageNum) => {
     getData(pageNum);
   };
+
+  // const orderModal = useRef('');
+  // const orderDetailModal = useRef('');
+  const deleteModal = useRef('');
   useEffect(() => {
     getData();
+    // orderDetailModal.current = new Modal('#orderDetailModal');
+    // orderModal.current = new Modal('#orderModal');
+    deleteModal.current = new Modal('#deleteModal');
   }, []);
-
   // 刪除
   const [deleteData, setDeleteData] = React.useState({
-    open: false,
     deleteId: null,
     deleteName: null,
   });
   const handleClose = () => {
+    deleteModal.current.hide();
     setDeleteData((preDelete) => ({
       ...preDelete,
-      open: false,
       deleteId: null,
       deleteName: null,
     }));
   };
-  const openDelete = (id, name) => {
+  const openDelete = (id) => {
+    deleteModal.current.show();
     setDeleteData((preDelete) => ({
       ...preDelete,
-      open: true,
       deleteId: id,
-      deleteName: name,
+      deleteName: id,
     }));
   };
   const handleDelete = async () => {
     const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/order/${deleteData.deleteId}`, { data: state });
     if (res.data.success) {
       getData();
+      deleteModal.current.hide();
     }
   };
   return (
@@ -67,9 +74,8 @@ function Products() {
         state.loading && <Loading />
       }
       <DeleteModal
-        text={`確認要刪除 ${deleteData.deleteName} 嗎？`}
+        text={`確認要刪除 ${deleteData.deleteName} 這張訂單嗎？`}
         close={handleClose}
-        open={deleteData.open}
         check={handleDelete}
       />
       <div className="p-3">
@@ -96,7 +102,7 @@ function Products() {
                   <td>{d.id}</td>
                   <td>{d.is_paid ? '付款完成' : '未付款'}</td>
                   <td>{new Date(d.paid_date * 1000).toLocaleString('sv-DE')}</td>
-                  <td>{d.user?.message}</td>
+                  <td>{d.message}</td>
                   <td>{d.user?.payment}</td>
                   <td>
                     <button className="btn btn-sm btn-outline-primary" type="button">查看</button>
@@ -109,8 +115,6 @@ function Products() {
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
-                      data-bs-toggle="modal"
-                      data-bs-target="#productModal"
                       onClick={() => {
                         setState({ type: 'edit', data: d });
                       }}
@@ -119,10 +123,8 @@ function Products() {
                     </button>
                     <button
                       type="button"
-                      data-bs-toggle="modal"
-                      data-bs-target="#deleteModal"
                       className="btn btn-outline-danger btn-sm ms-2"
-                      onClick={() => { openDelete(d.id, d.title); }}
+                      onClick={() => { openDelete(d.id); }}
                     >
                       刪除
                     </button>

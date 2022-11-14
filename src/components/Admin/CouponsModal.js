@@ -1,7 +1,9 @@
 import axios from 'axios';
 import React, { useEffect } from 'react';
 
-function CouponsModal({ type, data, refresh }) {
+function CouponsModal({
+  type, data, refresh, close,
+}) {
   const [state, setState] = React.useState({
     title: '超級特惠價格',
     is_enabled: 1,
@@ -42,17 +44,18 @@ function CouponsModal({ type, data, refresh }) {
     }
     if (res.data.success) {
       refresh();
+      close();
     }
   };
   return (
-    <div className="modal fade" id="productModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div className="modal fade" id="couponModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">
             <h1 className="modal-title fs-5" id="exampleModalLabel">
               {type === 'create' ? '建立新優惠券' : '編輯'}
             </h1>
-            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+            <button type="button" className="btn-close" onClick={close} aria-label="Close" />
           </div>
           <div className="modal-body">
             <div className="form-group mb-2">
@@ -65,13 +68,13 @@ function CouponsModal({ type, data, refresh }) {
                   value={state.title}
                   onChange={handleChange}
                   name="title"
-                  className="form-control"
+                  className="form-control mt-1"
                 />
 
               </label>
             </div>
             <div className="row">
-              <div className="form-group col-md-6">
+              <div className="form-group col-md-6 mb-2">
                 <label className="w-100" htmlFor="is_enabled">
                   數量
                   <input
@@ -81,11 +84,11 @@ function CouponsModal({ type, data, refresh }) {
                     onChange={handleChange}
                     name="is_enabled"
                     placeholder="請輸入數量"
-                    className="form-control"
+                    className="form-control mt-1"
                   />
                 </label>
               </div>
-              <div className="form-group col-md-6">
+              <div className="form-group col-md-6 mb-2">
                 <label className="w-100" htmlFor="percent">
                   折扣（%）
                   <input
@@ -95,13 +98,13 @@ function CouponsModal({ type, data, refresh }) {
                     name="percent"
                     id="percent"
                     placeholder="請輸入折扣（%）"
-                    className="form-control"
+                    className="form-control mt-1"
                   />
                 </label>
               </div>
             </div>
             <div className="row">
-              <div className="form-group col-md-6">
+              <div className="form-group col-md-6 mb-2">
                 <label className="w-100" htmlFor="due_date">
                   到期日
                   <input
@@ -111,11 +114,11 @@ function CouponsModal({ type, data, refresh }) {
                     onChange={handleChange}
                     name="due_date"
                     placeholder="請輸入到期日"
-                    className="form-control"
+                    className="form-control mt-1"
                   />
                 </label>
               </div>
-              <div className="form-group col-md-6">
+              <div className="form-group col-md-6 mb-2">
                 <label className="w-100" htmlFor="code">
                   優惠碼
                   <input
@@ -125,14 +128,14 @@ function CouponsModal({ type, data, refresh }) {
                     onChange={handleChange}
                     name="code"
                     placeholder="請輸入優惠碼"
-                    className="form-control"
+                    className="form-control mt-1"
                   />
                 </label>
               </div>
             </div>
           </div>
           <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            <button type="button" className="btn btn-secondary" onClick={close}>關閉</button>
             <button type="button" className="btn btn-primary" onClick={submit}>儲存</button>
           </div>
         </div>

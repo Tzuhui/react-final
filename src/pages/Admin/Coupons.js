@@ -1,5 +1,6 @@
+import React, { useEffect, useRef } from 'react';
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import { Modal } from 'bootstrap';
 import Dashboard from '../../components/Admin/Dashboard';
 import CouponsModal from '../../components/Admin/CouponsModal';
 import DeleteModal from '../../components/DeleteModal';
@@ -29,14 +30,10 @@ function Products() {
   const changePage = (pageNum) => {
     getData(pageNum);
   };
-  useEffect(() => {
-    getData();
-  }, []);
   const column = [{
     name: '標題',
     key: 'title',
-  },
-  {
+  }, {
     name: '數量',
     key: 'is_enabled',
   }, {
@@ -49,25 +46,30 @@ function Products() {
     name: '優惠碼',
     key: 'code',
   }];
-
+  const couponModal = useRef('');
+  const deleteModal = useRef('');
+  useEffect(() => {
+    getData();
+    couponModal.current = new Modal('#couponModal');
+    deleteModal.current = new Modal('#deleteModal');
+  }, []);
   // 刪除
   const [deleteData, setDeleteData] = React.useState({
-    open: false,
     deleteId: null,
     deleteName: null,
   });
   const handleClose = () => {
+    deleteModal.current.hide();
     setDeleteData((preDelete) => ({
       ...preDelete,
-      open: false,
       deleteId: null,
       deleteName: null,
     }));
   };
   const openDelete = (id, name) => {
+    deleteModal.current.show();
     setDeleteData((preDelete) => ({
       ...preDelete,
-      open: true,
       deleteId: id,
       deleteName: name,
     }));
@@ -76,7 +78,17 @@ function Products() {
     const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon/${deleteData.deleteId}`, { data: state });
     if (res.data.success) {
       getData();
+      deleteModal.current.hide();
     }
+  };
+
+  const openModal = (type, item) => {
+    couponModal.current.show();
+    setState({ type, data: item });
+  };
+  const closeModal = () => {
+    couponModal.current.hide();
+    setState({ type: '', data: {} });
   };
   return (
     <Dashboard>
@@ -86,20 +98,17 @@ function Products() {
       <DeleteModal
         text={`確認要刪除 ${deleteData.deleteName} 嗎？`}
         close={handleClose}
-        open={deleteData.open}
         check={handleDelete}
       />
       <div className="p-3">
         <h3>優惠券列表</h3>
         <hr />
-        <CouponsModal type={state.type} data={state.data} refresh={getData} />
+        <CouponsModal type={state.type} data={state.data} close={closeModal} refresh={getData} />
         <button
           type="button"
           className="btn btn-primary btn-sm"
-          data-bs-toggle="modal"
-          data-bs-target="#productModal"
           onClick={() => {
-            setState({ type: 'create', data: {} });
+            openModal('create', {});
           }}
         >
           建立新優惠券
@@ -124,18 +133,14 @@ function Products() {
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
-                      data-bs-toggle="modal"
-                      data-bs-target="#productModal"
                       onClick={() => {
-                        setState({ type: 'edit', data: d });
+                        openModal('edit', d);
                       }}
                     >
                       編輯
                     </button>
                     <button
                       type="button"
-                      data-bs-toggle="modal"
-                      data-bs-target="#deleteModal"
                       className="btn btn-outline-danger btn-sm ms-2"
                       onClick={() => { openDelete(d.id, d.title); }}
                     >
