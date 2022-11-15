@@ -28,12 +28,13 @@ function Products() {
   const handleCategoryChange = (value) => {
     setState((prev) => ({ ...prev, category: value === '全部' ? '' : value }));
   };
-  useEffect(() => {
-    getData(1, state.category);
-  }, [state.category]);
   const changePage = (pageNum) => {
     getData(pageNum, state.category);
   };
+  useEffect(() => {
+    getData(1, state.category);
+  }, [state.category]);
+
   return (
     <>
       {

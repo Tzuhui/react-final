@@ -30,10 +30,14 @@ function Products() {
   const changePage = (pageNum) => {
     getData(pageNum);
   };
+  useEffect(() => {
+    getData();
+  }, []);
   const column = [{
     name: '標題',
     key: 'title',
-  }, {
+  },
+  {
     name: '數量',
     key: 'is_enabled',
   }, {
