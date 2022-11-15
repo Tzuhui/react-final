@@ -29,6 +29,13 @@ function Orders() {
   const changePage = (page = 1) => {
     setState((prev) => ({ ...prev, nowPage: page }));
   };
+  const postCoupon = (code) => {
+    axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/coupon`, { data: { code } }).then((res) => {
+      if (res.data.success) {
+        getCart();
+      }
+    });
+  };
   return (
     <div>
       <Header />
@@ -44,6 +51,7 @@ function Orders() {
         {
         state.nowPage === 1 && (
         <Cart
+          postCoupon={postCoupon}
           carts={state.carts}
           total={state.total}
           finalTotal={state.final_total}

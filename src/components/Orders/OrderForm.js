@@ -29,6 +29,14 @@ function OrderForm({ carts, finalTotal, changePage }) {
       navigate(`/order/${res.data.orderId}`);
     }
   };
+  const [state, setState] = React.useState({
+    payType: '',
+    message: '',
+  });
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setState((prev) => ({ ...prev, [name]: value }));
+  };
   return (
     <div className="container">
       <form onSubmit={handleSubmit((data) => submit(data))}>
@@ -117,9 +125,10 @@ function OrderForm({ carts, finalTotal, changePage }) {
                   <textarea
                     id="message"
                     className="form-control rounded-0 mt-1"
-                    name=""
+                    name="message"
                     rows="2"
                     {...register('message')}
+                    onChange={handleChange}
                   />
                 </label>
               </div>
@@ -154,6 +163,7 @@ function OrderForm({ carts, finalTotal, changePage }) {
                         message: '此欄位為必填',
                       },
                     })}
+                    onChange={handleChange}
                     className="form-check-input"
                     type="radio"
                     name="payType"
@@ -277,7 +287,7 @@ function OrderForm({ carts, finalTotal, changePage }) {
                     >
                       備註
                     </th>
-                    <td className="text-end border-0 px-0 pt-4">NT$24,000</td>
+                    <td className="text-end border-0 px-0 pt-4" style={{ maxWidth: '150px' }}>{state.message}</td>
                   </tr>
                   <tr>
                     <th
@@ -286,7 +296,7 @@ function OrderForm({ carts, finalTotal, changePage }) {
                     >
                       付款方式
                     </th>
-                    <td className="text-end border-0 px-0 pt-0 pb-4">ApplePay</td>
+                    <td className="text-end border-0 px-0 pt-0 pb-4">{state.payType}</td>
                   </tr>
                 </tbody>
               </table>

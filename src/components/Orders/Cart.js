@@ -1,23 +1,14 @@
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
 function Cart({
-  carts, total, finalTotal, changePage,
+  carts, total, finalTotal, changePage, postCoupon,
 }) {
   const [state, setState] = useState({
     price: 0,
     code: '',
     result: false,
   });
-  const postCoupon = () => {
-    axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/coupon`, { data: { code: state.code } }).then((res) => {
-      if (res.data.success) {
-        setState((prv) => ({
-          ...prv, result: res.data.success, price: res.data.data.final_total, code: '',
-        }));
-      }
-    });
-  };
+
   useEffect(() => {
     if (total !== finalTotal) {
       setState((prv) => ({ ...prv, result: true, price: finalTotal }));
@@ -59,7 +50,7 @@ function Cart({
           }
           <div className="input-group mt-4">
             <input type="text" value={state.code} onChange={(e) => { setState((prv) => ({ ...prv, code: e.target.value })); }} className="form-control rounded-0" placeholder="新增優惠券" aria-label="新增優惠券" aria-describedby="新增優惠券" />
-            <button className="btn btn-secondary rounded-0" type="button" id="button-addon2" onClick={postCoupon}>套用優惠</button>
+            <button className="btn btn-secondary rounded-0" type="button" id="button-addon2" onClick={() => { postCoupon(state.code); }}>套用優惠</button>
           </div>
           <div className="d-flex justify-content-between align-items-end mt-4">
             <p className="mb-0 h4 fw-bold">總額</p>
