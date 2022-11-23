@@ -9,6 +9,7 @@ import 'material-icons/iconfont/material-icons.css';
 import './index.css';
 import App from './App';
 import Login from './pages/Login';
+import ProtectedRoute from './pages/Admin/ProtectedRoute';
 import AdminProducts from './pages/Admin/Products';
 import AdminCoupons from './pages/Admin/Coupons';
 import AdminOrders from './pages/Admin/Orders';
@@ -48,6 +49,7 @@ const router = createHashRouter([
   },
   {
     path: '/admin',
+    element: <ProtectedRoute />,
     children: [
       {
         path: 'products',

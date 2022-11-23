@@ -1,27 +1,15 @@
 import axios from 'axios';
 import React from 'react';
-import { NavLink, Navigate } from 'react-router-dom';
-
-function getCookie(cname) {
-  const name = `${cname}=`;
-  const decodedCookie = decodeURIComponent(document.cookie);
-  const ca = decodedCookie.split(';');
-  for (let i = 0; i < ca.length; i += 1) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) === 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return '';
-}
+import { NavLink, useNavigate } from 'react-router-dom';
 
 function Dashboard({ children }) {
-  const token = getCookie('reactFinalToken');
-  axios.defaults.headers.Authorization = token;
-  return token ? (
+  const navigate = useNavigate();
+  const logout = () => {
+    axios.post('/v2/logout');
+    document.cookie = 'reactFinalToken=;';
+    navigate('/login');
+  };
+  return (
     <div>
       <nav className="navbar navbar-expand-lg bg-dark">
         <div className="container-fluid">
@@ -42,9 +30,9 @@ function Dashboard({ children }) {
           <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <a className="nav-link link-white active" aria-current="page" href="/">
+                <button type="button" className="btn btn-sm btn-light" onClick={logout}>
                   登出
-                </a>
+                </button>
               </li>
             </ul>
           </div>
@@ -80,8 +68,6 @@ function Dashboard({ children }) {
         <div className="w-100">{children}</div>
       </div>
     </div>
-  ) : (
-    <Navigate to="/login" />
   );
 }
 
