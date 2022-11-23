@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
+import { MessageContext, messageReducer, initState } from '../../store';
+import Message from '../../components/Message';
 
 function getCookie(cname) {
   const name = `${cname}=`;
@@ -21,9 +23,14 @@ function getCookie(cname) {
 function ProtectedRoute({ children }) {
   const token = getCookie('reactFinalToken');
   axios.defaults.headers.Authorization = token;
-
+  const reducer = React.useReducer(messageReducer, initState);
   if (token) {
-    return children || <Outlet />;
+    return (
+      <MessageContext.Provider value={reducer}>
+        <Message />
+        {children || <Outlet />}
+      </MessageContext.Provider>
+    );
   }
   return (
     <Navigate

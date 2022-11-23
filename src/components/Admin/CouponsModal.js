@@ -1,9 +1,11 @@
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
+import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
 
 function CouponsModal({
   type, data, refresh, close,
 }) {
+  const [, dispatch] = useContext(MessageContext);
   const [state, setState] = React.useState({
     title: '超級特惠價格',
     is_enabled: 1,
@@ -36,15 +38,18 @@ function CouponsModal({
     }
   };
   const submit = async () => {
-    let res;
-    if (type === 'create') {
-      res = await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon`, { data: state });
-    } else {
-      res = await axios.put(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon/${data.id}`, { data: state });
-    }
-    if (res.data.success) {
-      refresh();
+    try {
+      let res;
+      if (type === 'create') {
+        res = await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon`, { data: state });
+      } else {
+        res = await axios.put(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon/${data.id}`, { data: state });
+      }
       close();
+      refresh();
+      handleSuccessMessage(res, dispatch);
+    } catch (e) {
+      handleErrorMessage(e, dispatch);
     }
   };
   return (

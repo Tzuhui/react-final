@@ -13,9 +13,9 @@ function Dashboard({ children }) {
     <div>
       <nav className="navbar navbar-expand-lg bg-dark">
         <div className="container-fluid">
-          <a className="navbar-brand link-white" href="/">
-            Navbar
-          </a>
+          <p className="text-white mb-0">
+            HEX EATS 後台管理系統
+          </p>
           <button
             className="navbar-toggler"
             type="button"

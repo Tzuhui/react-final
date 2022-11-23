@@ -1,9 +1,11 @@
 import axios from 'axios';
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
+import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
 
 function ProductsModal({
   type, data, refresh, close,
 }) {
+  const [, dispatch] = useContext(MessageContext);
   const [state, setState] = React.useState({
     title: '',
     category: '',
@@ -50,14 +52,17 @@ function ProductsModal({
     }
   };
   const submit = async () => {
-    let res;
-    if (type === 'create') {
-      res = await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product`, { data: state });
-    } else {
-      res = await axios.put(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${data.id}`, { data: state });
-    }
-    if (res.data.success) {
+    try {
+      let res;
+      if (type === 'create') {
+        res = await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product`, { data: state });
+      } else {
+        res = await axios.put(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${data.id}`, { data: state });
+      }
+      handleSuccessMessage(res, dispatch);
       refresh();
+    } catch (e) {
+      handleErrorMessage(e, dispatch);
     }
   };
   return (

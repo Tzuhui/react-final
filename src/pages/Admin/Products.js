@@ -1,12 +1,14 @@
 import axios from 'axios';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import { Modal } from 'bootstrap';
 import Dashboard from '../../components/Admin/Dashboard';
 import ProductsModal from '../../components/Admin/ProductsModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
+import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
 
 function Products() {
+  const [, dispatch] = useContext(MessageContext);
   const [state, setState] = React.useState({
     type: 'create',
     data: {},
@@ -22,9 +24,13 @@ function Products() {
   });
   const getData = async (p = 1) => {
     setState((prev) => ({ ...prev, loading: true }));
-    const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products?page=${p}`);
-    setData(res.data.products);
-    setPage(res.data.pagination);
+    try {
+      const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products?page=${p}`);
+      setData(res.data.products);
+      setPage(res.data.pagination);
+    } catch (e) {
+      handleErrorMessage(e, dispatch);
+    }
     setState((prev) => ({ ...prev, loading: false }));
   };
   const changePage = (pageNum) => {
@@ -81,9 +87,14 @@ function Products() {
     }));
   };
   const handleDelete = async () => {
-    const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${deleteData.deleteId}`, { data: state });
-    if (res.data.success) {
-      getData();
+    try {
+      const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${deleteData.deleteId}`, { data: state });
+      if (res.data.success) {
+        getData();
+      }
+      handleSuccessMessage(res, dispatch);
+    } catch (e) {
+      handleErrorMessage(e, dispatch);
     }
     deleteModal.current.hide();
   };

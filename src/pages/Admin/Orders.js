@@ -1,13 +1,15 @@
 import axios from 'axios';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import { Modal } from 'bootstrap';
 import { useNavigate } from 'react-router-dom';
 import Dashboard from '../../components/Admin/Dashboard';
-// import ProductsModal from '../../components/Admin/ProductsModal';
+import OrderModal from '../../components/Admin/OrderModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
+import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
 
 function Products() {
+  const [, dispatch] = useContext(MessageContext);
   const navigate = useNavigate();
   const [state, setState] = React.useState({
     type: 'create',
@@ -39,14 +41,13 @@ function Products() {
     getData(pageNum);
   };
 
-  // const orderModal = useRef('');
+  const orderModal = useRef('');
   // const orderDetailModal = useRef('');
   const deleteModal = useRef('');
   useEffect(() => {
-    console.log('Order');
     getData();
     // orderDetailModal.current = new Modal('#orderDetailModal');
-    // orderModal.current = new Modal('#orderModal');
+    orderModal.current = new Modal('#orderModal');
     deleteModal.current = new Modal('#deleteModal');
   }, []);
   // 刪除
@@ -71,11 +72,36 @@ function Products() {
     }));
   };
   const handleDelete = async () => {
-    const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/order/${deleteData.deleteId}`, { data: state });
-    if (res.data.success) {
-      getData();
-      deleteModal.current.hide();
+    try {
+      const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/order/${deleteData.deleteId}`, { data: state });
+      if (res.data.success) {
+        getData();
+      }
+      handleSuccessMessage(res, dispatch);
+    } catch (e) {
+      handleErrorMessage(e, dispatch);
     }
+    deleteModal.current.hide();
+  };
+  const [modalData, setModalData] = React.useState({
+    type: '',
+    data: {},
+  });
+  const openModal = (type, modalContent) => {
+    setModalData((preModal) => ({
+      ...preModal,
+      type,
+      data: modalContent,
+    }));
+    orderModal.current.show();
+  };
+  const closeModal = () => {
+    setModalData((preModal) => ({
+      ...preModal,
+      type: '',
+      data: {},
+    }));
+    orderModal.current.hide();
   };
   return (
     <Dashboard>
@@ -87,10 +113,15 @@ function Products() {
         close={handleClose}
         check={handleDelete}
       />
+      <OrderModal
+        type={modalData.type}
+        data={modalData.data}
+        close={closeModal}
+        refresh={getData}
+      />
       <div className="p-3">
         <h3>訂單管理</h3>
         <hr />
-        {/* <ProductsModal type={state.type} data={state.data} refresh={getData} /> */}
         <table className="table">
           <thead>
             <tr>
@@ -109,12 +140,20 @@ function Products() {
               data.length > 0 && data.map((d) => (
                 <tr>
                   <td>{d.id}</td>
-                  <td>{d.is_paid ? '付款完成' : '未付款'}</td>
+                  <td>{d.is_paid ? <span className="text-success fw-bold">付款完成</span> : '未付款'}</td>
                   <td>{new Date(d.paid_date * 1000).toLocaleString('sv-DE')}</td>
                   <td>{d.message}</td>
                   <td>{d.user?.payment}</td>
                   <td>
-                    <button className="btn btn-sm btn-outline-primary" type="button">查看</button>
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                      type="button"
+                      onClick={() => {
+                        openModal('product', d.products);
+                      }}
+                    >
+                      查看
+                    </button>
                   </td>
                   <td>
                     {d.user?.name}
@@ -125,7 +164,7 @@ function Products() {
                       type="button"
                       className="btn btn-primary btn-sm"
                       onClick={() => {
-                        setState({ type: 'edit', data: d });
+                        openModal('edit', d);
                       }}
                     >
                       編輯

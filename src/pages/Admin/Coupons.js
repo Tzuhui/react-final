@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
@@ -6,8 +6,10 @@ import Dashboard from '../../components/Admin/Dashboard';
 import CouponsModal from '../../components/Admin/CouponsModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
+import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
 
 function Products() {
+  const [, dispatch] = useContext(MessageContext);
   const navigate = useNavigate();
   const [state, setState] = React.useState({
     type: 'create',
@@ -87,10 +89,15 @@ function Products() {
     }));
   };
   const handleDelete = async () => {
-    const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon/${deleteData.deleteId}`, { data: state });
-    if (res.data.success) {
-      getData();
-      deleteModal.current.hide();
+    try {
+      const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon/${deleteData.deleteId}`, { data: state });
+      if (res.data.success) {
+        getData();
+        deleteModal.current.hide();
+      }
+      handleSuccessMessage(res, dispatch);
+    } catch (e) {
+      handleErrorMessage(e, dispatch);
     }
   };
 

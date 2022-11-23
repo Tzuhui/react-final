@@ -4,7 +4,7 @@ import { MessageContext } from '../store';
 function Message() {
   const [state] = useContext(MessageContext);
   return (
-    <div className="toast-container position-fixed" style={{ bottom: '10px', right: '10px' }}>
+    <div className="toast-container position-fixed" style={{ bottom: '15px', right: '15px' }}>
       {
         state?.messages?.title && (
         <div className={`toast ${state?.messages?.title && 'show'}`} role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
