@@ -1,6 +1,6 @@
 import axios from 'axios';
-import React, { useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import React from 'react';
+import { NavLink, Navigate } from 'react-router-dom';
 
 function getCookie(cname) {
   const name = `${cname}=`;
@@ -19,11 +19,9 @@ function getCookie(cname) {
 }
 
 function Dashboard({ children }) {
-  useEffect(() => {
-    const token = getCookie('reactFinalToken');
-    axios.defaults.headers.Authorization = token;
-  }, []);
-  return (
+  const token = getCookie('reactFinalToken');
+  axios.defaults.headers.Authorization = token;
+  return token ? (
     <div>
       <nav className="navbar navbar-expand-lg bg-dark">
         <div className="container-fluid">
@@ -82,6 +80,8 @@ function Dashboard({ children }) {
         <div className="w-100">{children}</div>
       </div>
     </div>
+  ) : (
+    <Navigate to="/login" />
   );
 }
 

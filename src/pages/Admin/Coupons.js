@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
 import Dashboard from '../../components/Admin/Dashboard';
@@ -7,6 +8,7 @@ import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
 
 function Products() {
+  const navigate = useNavigate();
   const [state, setState] = React.useState({
     type: 'create',
     data: {},
@@ -22,9 +24,15 @@ function Products() {
   });
   const getData = async (p = 1) => {
     setState((prev) => ({ ...prev, loading: true }));
-    const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupons?page=${p}`);
-    setData(res.data.coupons);
-    setPage(res.data.pagination);
+    try {
+      const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupons?page=${p}`);
+      setData(res.data.coupons);
+      setPage(res.data.pagination);
+    } catch (e) {
+      if (e.response.status === 401) {
+        navigate('/login');
+      }
+    }
     setState((prev) => ({ ...prev, loading: false }));
   };
   const changePage = (pageNum) => {
