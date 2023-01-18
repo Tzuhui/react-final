@@ -8,7 +8,7 @@ import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
 import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
 
-function Products() {
+function Orders() {
   const [, dispatch] = useContext(MessageContext);
   const navigate = useNavigate();
   const [state, setState] = React.useState({
@@ -112,12 +112,14 @@ function Products() {
         text={`確認要刪除 ${deleteData.deleteName} 這張訂單嗎？`}
         close={handleClose}
         check={handleDelete}
+        id="deleteModal"
       />
       <OrderModal
         type={modalData.type}
         data={modalData.data}
         close={closeModal}
         refresh={getData}
+        id="orderModal"
       />
       <div className="p-3">
         <h3>訂單管理</h3>
@@ -219,4 +221,4 @@ function Products() {
   );
 }
 
-export default Products;
+export default Orders;

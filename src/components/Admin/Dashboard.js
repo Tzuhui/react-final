@@ -44,20 +44,17 @@ function Dashboard({ children }) {
             <li className="p-2">
               <NavLink className="link-dark" to="/admin/products">
                 <span className="material-icons">inventory_2</span>
-                {' '}
                 產品列表
               </NavLink>
             </li>
             <li className="p-2">
               <NavLink className="link-dark" to="/admin/coupons">
                 <span className="material-icons">local_activity</span>
-                {' '}
                 優惠卷列表
               </NavLink>
             </li>
             <li className="p-2">
               <NavLink className="link-dark" to="/admin/orders">
-                {' '}
                 <span className="material-icons">receipt_long</span>
                 訂單列表
               </NavLink>

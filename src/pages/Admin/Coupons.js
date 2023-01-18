@@ -8,7 +8,7 @@ import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
 import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
 
-function Products() {
+function Coupons() {
   const [, dispatch] = useContext(MessageContext);
   const navigate = useNavigate();
   const [state, setState] = React.useState({
@@ -115,6 +115,7 @@ function Products() {
         state.loading && <Loading />
       }
       <DeleteModal
+        id="deleteModal"
         text={`確認要刪除 ${deleteData.deleteName} 嗎？`}
         close={handleClose}
         check={handleDelete}
@@ -122,7 +123,7 @@ function Products() {
       <div className="p-3">
         <h3>優惠券列表</h3>
         <hr />
-        <CouponsModal type={state.type} data={state.data} close={closeModal} refresh={getData} />
+        <CouponsModal id="couponModal" type={state.type} data={state.data} close={closeModal} refresh={getData} />
         <button
           type="button"
           className="btn btn-primary btn-sm"
@@ -206,4 +207,4 @@ function Products() {
   );
 }
 
-export default Products;
+export default Coupons;

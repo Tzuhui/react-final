@@ -48,7 +48,7 @@ function Products() {
           </a>
           {
             categoryList.map((c) => (
-              <a key={`p_${c.id}`} onClick={(e) => { e.preventDefault(); handleCategoryChange(c); }} className={`nav-item nav-link text-nowrap px-2 ${state.category === c && 'active'}`} href="/">
+              <a key={`p_${c}`} onClick={(e) => { e.preventDefault(); handleCategoryChange(c); }} className={`nav-item nav-link text-nowrap px-2 ${state.category === c && 'active'}`} href="/">
                 {c}
               </a>
             ))
@@ -68,12 +68,6 @@ function Products() {
                       style={{ height: '200px', objectFit: 'cover' }}
                       alt="..."
                     />
-                    <a href="/" className="text-dark">
-                      <i
-                        className="far fa-heart position-absolute"
-                        style={{ right: '16px', top: '16px' }}
-                      />
-                    </a>
                     <div className="card-body p-0">
                       <h4 className="mb-0 mt-3">
                         {d.title}

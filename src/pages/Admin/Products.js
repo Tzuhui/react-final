@@ -9,7 +9,7 @@ import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../
 
 function Products() {
   const [, dispatch] = useContext(MessageContext);
-  const [state, setState] = React.useState({
+  const [pageState, setPageState] = React.useState({
     type: 'create',
     data: {},
     loading: true,
@@ -23,7 +23,7 @@ function Products() {
     total_pages: 1,
   });
   const getData = async (p = 1) => {
-    setState((prev) => ({ ...prev, loading: true }));
+    setPageState((prev) => ({ ...prev, loading: true }));
     try {
       const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products?page=${p}`);
       setData(res.data.products);
@@ -31,11 +31,13 @@ function Products() {
     } catch (e) {
       handleErrorMessage(e, dispatch);
     }
-    setState((prev) => ({ ...prev, loading: false }));
+    setPageState((prev) => ({ ...prev, loading: false }));
   };
   const changePage = (pageNum) => {
     getData(pageNum);
   };
+
+  // Modal 相關事件
   const productModal = useRef('');
   const deleteModal = useRef('');
   useEffect(() => {
@@ -45,11 +47,11 @@ function Products() {
   }, []);
   const openModal = (type, item) => {
     productModal.current.show();
-    setState({ type, data: item });
+    setPageState({ type, data: item });
   };
   const closeModal = () => {
     productModal.current.hide();
-    setState({ type: '', data: {} });
+    setPageState({ type: '', data: {} });
   };
   const column = [{
     name: '分類',
@@ -88,7 +90,7 @@ function Products() {
   };
   const handleDelete = async () => {
     try {
-      const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${deleteData.deleteId}`, { data: state });
+      const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${deleteData.deleteId}`, { data: pageState });
       if (res.data.success) {
         getData();
       }
@@ -101,33 +103,37 @@ function Products() {
   return (
     <Dashboard>
       {
-        state.loading && <Loading />
+        pageState.loading && <Loading />
       }
       <DeleteModal
         text={`確認要刪除 ${deleteData.deleteName} 嗎？`}
         close={handleClose}
         open={deleteData.open}
         check={handleDelete}
+        id="deleteModal"
+      />
+      <ProductsModal
+        type={pageState.type}
+        data={pageState.data}
+        refresh={() => {
+          getData();
+          closeModal();
+        }}
+        close={closeModal}
+        id="productModal"
       />
       <div className="p-3">
         <h3>產品列表</h3>
         <hr />
-        <ProductsModal
-          type={state.type}
-          data={state.data}
-          refresh={() => {
-            getData();
-            closeModal();
-          }}
-          close={closeModal}
-        />
-        <button
-          type="button"
-          className="btn btn-primary btn-sm"
-          onClick={() => { openModal('create', {}); }}
-        >
-          建立新商品
-        </button>
+        <div className="text-end">
+          <button
+            type="button"
+            className="btn btn-primary btn-sm"
+            onClick={() => { openModal('create', {}); }}
+          >
+            建立新商品
+          </button>
+        </div>
         <table className="table">
           <thead>
             <tr>

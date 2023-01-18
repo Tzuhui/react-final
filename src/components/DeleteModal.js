@@ -1,10 +1,10 @@
 import React from 'react';
 
 function DeleteModal({
-  check, close, text,
+  check, close, text, id,
 }) {
   return (
-    <div className="modal fade" id="deleteModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div className="modal fade" id={id} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header bg-danger">

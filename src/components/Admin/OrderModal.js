@@ -3,7 +3,7 @@ import React, { useEffect, useContext } from 'react';
 import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
 
 function OrderModal({
-  type, close, data, refresh,
+  type, close, data, refresh, id,
 }) {
   const [, dispatch] = useContext(MessageContext);
   const [state, setState] = React.useState({
@@ -39,7 +39,7 @@ function OrderModal({
     }
   };
   return (
-    <div className="modal fade" id="orderModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div className="modal fade" id={id} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div className="modal-dialog modal-lg">
         <div className="modal-content">
           <div className="modal-header">

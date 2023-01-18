@@ -15,7 +15,6 @@ function Login() {
   const submit = async () => {
     const res = await axios.post('/v2/admin/signin', state);
     document.cookie = `reactFinalToken=${res.data.token}; expires=${new Date(res.data.expired).toUTCString()};`;
-    document.cookie = `reactFinalUID=${res.data.uid};`;
     if (res.data.success) {
       navigate('/admin/products');
     }
