@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { useParams, NavLink } from 'react-router-dom';
+import { useParams, NavLink, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../components/Loading';
-import Header from '../components/Header';
 
 function Products() {
+  const { getNavbarCart } = useOutletContext();
   const { productId } = useParams();
   const [data, setData] = React.useState([]);
   const [recommendData, setRecommendData] = React.useState([]);
@@ -40,10 +40,10 @@ function Products() {
     });
     setState((prev) => ({ ...prev, cartChange: true, loading: true }));
     getData(productId);
+    getNavbarCart();
   };
   return (
     <>
-      <Header cartChange={state.cartChange} />
       { state.loading ? <Loading /> : '' }
       <div className="container">
         <div className="row justify-content-between mt-4 mb-7">

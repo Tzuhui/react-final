@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
-
 import { NavLink } from 'react-router-dom';
-import Header from '../components/Header';
 import Loading from '../components/Loading';
 
 function Products() {
@@ -40,7 +38,6 @@ function Products() {
       {
         state.loading && <Loading />
       }
-      <Header />
       <nav className="navbar navbar-expand-lg navbar-light justify-content-center border border-start-0 border-end-0 border-top border-bottom">
         <div className="navbar-nav flex-row overflow-auto navbar-custom-scroll">
           <a onClick={(e) => { e.preventDefault(); handleCategoryChange('全部'); }} className={`nav-item nav-link text-nowrap px-2 ${state.category === '' && 'active'}`} href="/">

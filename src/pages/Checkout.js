@@ -5,7 +5,7 @@ import { Link, useNavigate, useOutletContext } from 'react-router-dom';
 
 function OrderForm() {
   const {
-    carts, finalTotal, changePage,
+    carts, finalTotal,
   } = useOutletContext();
   const navigate = useNavigate();
   const {
@@ -158,7 +158,6 @@ function OrderForm() {
                 to="/orders/cart"
                 type="button"
                 className="text-dark mt-md-0 mt-3 text-decoration-none"
-                onClick={(e) => { e.preventDefault(); changePage(1); }}
               >
                 <span className="material-icons">
                   chevron_left

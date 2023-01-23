@@ -1,91 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {
-  createHashRouter,
-  RouterProvider,
-} from 'react-router-dom';
 import axios from 'axios';
 import 'material-icons/iconfont/material-icons.css';
 import './index.css';
-import App from './App';
-import Login from './pages/Login';
-import ProtectedRoute from './pages/Admin/ProtectedRoute';
-import AdminProducts from './pages/Admin/Products';
-import AdminCoupons from './pages/Admin/Coupons';
-import AdminOrders from './pages/Admin/Orders';
-import reportWebVitals from './reportWebVitals';
 import './assets/scss/all.scss';
-import Products from './pages/Products';
-import ProductDetail from './pages/ProductDetail';
-import Orders from './pages/Orders';
-import Success from './pages/Success';
-import ErrorPage from './components/ErrorPage';
-import Checkout from './pages/Checkout';
-import Cart from './components/Orders/Cart';
+import {
+  HashRouter,
+} from 'react-router-dom';
+import reportWebVitals from './reportWebVitals';
+import App from './App';
 
 axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
-
-const router = createHashRouter([
-  {
-    path: '/',
-    element: <App />,
-  },
-  {
-    path: '/login',
-    element: <Login />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: '/products',
-    element: <Products />,
-  },
-  {
-    path: '/product/:productId',
-    element: <ProductDetail />,
-  },
-  {
-    path: '/orders',
-    element: <Orders />,
-    children: [
-      {
-        path: 'cart',
-        element: <Cart />,
-      },
-      {
-        path: 'checkout',
-        element: <Checkout />,
-      },
-    ],
-  },
-  {
-    path: '/order/:orderId',
-    element: <Success />,
-  },
-  {
-    path: '/admin',
-    element: <ProtectedRoute />,
-    children: [
-      {
-        path: 'products',
-        element: <AdminProducts />,
-      },
-      {
-        path: 'coupons',
-        element: <AdminCoupons />,
-      },
-      {
-        path: 'orders',
-        element: <AdminOrders />,
-      },
-    ],
-  },
-
-]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <HashRouter>
+      <App />
+    </HashRouter>
   </React.StrictMode>,
 );
 

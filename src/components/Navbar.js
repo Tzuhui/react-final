@@ -2,19 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 
-function Header({ cartChange }) {
-  const [state, setState] = useState({
-    cartLength: 0,
-    carts: [],
-  });
+function Navbar({ state, getCart }) {
   const [loading, setLoading] = useState('');
-  const getCart = async () => {
-    const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/cart`);
-    setState({
-      cartLength: res.data.data.carts.length,
-      carts: res.data.data.carts,
-    });
-  };
   const removeCart = async ({ id }) => {
     setLoading(id);
     await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/cart/${id}`);
@@ -24,11 +13,6 @@ function Header({ cartChange }) {
   useEffect(() => {
     getCart();
   }, []);
-  useEffect(() => {
-    if (cartChange) {
-      getCart();
-    }
-  }, [cartChange]);
   return (
     <div className="bg-white sticky-top">
       <div className="container">
@@ -123,4 +107,4 @@ function Header({ cartChange }) {
   );
 }
 
-export default Header;
+export default Navbar;

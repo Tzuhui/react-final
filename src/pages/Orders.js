@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
-import Header from '../components/Header';
 import Loading from '../components/Loading';
 import OrderStep from '../components/OrderStep';
 
 function Orders() {
+  const { getNavbarCart } = useOutletContext();
   const [state, setState] = useState({
     nowPage: 1,
     cartLength: 0,
@@ -25,6 +25,7 @@ function Orders() {
       total: d.total,
       loading: false,
     }));
+    getNavbarCart();
   };
 
   useEffect(() => {
@@ -34,7 +35,6 @@ function Orders() {
 
   return (
     <div>
-      <Header />
       <nav className="bg-light p-0">
         <div className="container">
           <OrderStep />
