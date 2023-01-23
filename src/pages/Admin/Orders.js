@@ -2,7 +2,6 @@ import axios from 'axios';
 import React, { useEffect, useRef, useContext } from 'react';
 import { Modal } from 'bootstrap';
 import { useNavigate } from 'react-router-dom';
-import Dashboard from '../../components/Admin/Dashboard';
 import OrderModal from '../../components/Admin/OrderModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
@@ -104,7 +103,7 @@ function Orders() {
     orderModal.current.hide();
   };
   return (
-    <Dashboard>
+    <>
       {
         state.loading && <Loading />
       }
@@ -217,7 +216,7 @@ function Orders() {
           </ul>
         </nav>
       </div>
-    </Dashboard>
+    </>
   );
 }
 

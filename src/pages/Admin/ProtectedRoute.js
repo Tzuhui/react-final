@@ -4,20 +4,12 @@ import { Outlet, Navigate } from 'react-router-dom';
 import { MessageContext, messageReducer, initState } from '../../store';
 import Message from '../../components/Message';
 
-function getCookie(cname) {
-  const name = `${cname}=`;
-  const decodedCookie = decodeURIComponent(document.cookie);
-  const ca = decodedCookie.split(';');
-  for (let i = 0; i < ca.length; i += 1) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) === 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return '';
+function getCookie(name) {
+  const cookieValue = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith(`${name}=`))
+    ?.split('=')[1];
+  return cookieValue;
 }
 
 function ProtectedRoute({ children }) {

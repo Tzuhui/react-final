@@ -6,7 +6,6 @@ import React, {
   useContext,
 } from 'react';
 import { Modal } from 'bootstrap';
-import Dashboard from '../../components/Admin/Dashboard';
 import ProductsModal from '../../components/Admin/ProductsModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
@@ -106,7 +105,7 @@ function Products() {
     deleteModal.current.hide();
   };
   return (
-    <Dashboard>
+    <>
       {
         pageState.loading && <Loading />
       }
@@ -213,7 +212,7 @@ function Products() {
           </ul>
         </nav>
       </div>
-    </Dashboard>
+    </>
   );
 }
 export default Products;

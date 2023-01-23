@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
-import Dashboard from '../../components/Admin/Dashboard';
 import CouponsModal from '../../components/Admin/CouponsModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
@@ -110,7 +109,7 @@ function Coupons() {
     setState({ type: '', data: {} });
   };
   return (
-    <Dashboard>
+    <>
       {
         state.loading && <Loading />
       }
@@ -203,7 +202,7 @@ function Coupons() {
           </ul>
         </nav>
       </div>
-    </Dashboard>
+    </>
   );
 }
 
