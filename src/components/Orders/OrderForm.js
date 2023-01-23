@@ -226,9 +226,7 @@ function OrderForm({ carts, finalTotal, changePage }) {
                 className="text-dark mt-md-0 mt-3 text-decoration-none"
                 onClick={(e) => { e.preventDefault(); changePage(1); }}
               >
-                <span className="material-icons">
-                  chevron_left
-                </span>
+                <i className="bi bi-chevron-left" />
                 {' '}
                 返回
               </a>

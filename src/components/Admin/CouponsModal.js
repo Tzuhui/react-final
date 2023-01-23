@@ -1,21 +1,22 @@
 import axios from 'axios';
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
 
 function CouponsModal({
-  type, data, refresh, close, id,
+  type, coupon, refresh, close, id,
 }) {
   const [, dispatch] = useContext(MessageContext);
-  const [state, setState] = React.useState({
+  const [date, setDate] = useState(new Date());
+  const [state, setState] = useState({
     title: '超級特惠價格',
     is_enabled: 1,
     percent: 80,
-    due_date: 1555459200,
     code: 'testCode',
   });
   useEffect(() => {
     if (type === 'edit') {
-      setState((preState) => ({ ...preState, ...data }));
+      setState((preState) => ({ ...preState, ...coupon }));
+      setDate(new Date(coupon.due_date));
     } else {
       setState((preState) => ({
         ...preState,
@@ -25,14 +26,13 @@ function CouponsModal({
         due_date: '',
         code: '',
       }));
+      setDate(new Date());
     }
-  }, [type, data.id]);
+  }, [type, coupon.id]);
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, checked } = e.target;
     if (['is_enabled', 'percent'].includes(name)) {
-      setState((preState) => ({ ...preState, [name]: +value }));
-    } else if (name === 'due_date') {
-      setState((preState) => ({ ...preState, due_date: (new Date(value).getTime()) }));
+      setState((preState) => ({ ...preState, [name]: +checked }));
     } else {
       setState((preState) => ({ ...preState, [name]: value }));
     }
@@ -40,10 +40,14 @@ function CouponsModal({
   const submit = async () => {
     try {
       let res;
+      const data = {
+        ...state,
+        due_date: new Date(date).getTime(),
+      };
       if (type === 'create') {
-        res = await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon`, { data: state });
+        res = await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon`, { data });
       } else {
-        res = await axios.put(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon/${data.id}`, { data: state });
+        res = await axios.put(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon/${coupon.id}`, { data });
       }
       close();
       refresh();
@@ -63,7 +67,7 @@ function CouponsModal({
             <button type="button" className="btn-close" onClick={close} aria-label="Close" />
           </div>
           <div className="modal-body">
-            <div className="form-group mb-2">
+            <div className="mb-2">
               <label className="w-100" htmlFor="title">
                 標題
                 <input
@@ -79,21 +83,7 @@ function CouponsModal({
               </label>
             </div>
             <div className="row">
-              <div className="form-group col-md-6 mb-2">
-                <label className="w-100" htmlFor="is_enabled">
-                  數量
-                  <input
-                    type="number"
-                    id="is_enabled"
-                    value={state.is_enabled}
-                    onChange={handleChange}
-                    name="is_enabled"
-                    placeholder="請輸入數量"
-                    className="form-control mt-1"
-                  />
-                </label>
-              </div>
-              <div className="form-group col-md-6 mb-2">
+              <div className="col-md-6 mb-2">
                 <label className="w-100" htmlFor="percent">
                   折扣（%）
                   <input
@@ -107,23 +97,29 @@ function CouponsModal({
                   />
                 </label>
               </div>
-            </div>
-            <div className="row">
-              <div className="form-group col-md-6 mb-2">
+              <div className="col-md-6 mb-2">
                 <label className="w-100" htmlFor="due_date">
                   到期日
                   <input
                     type="date"
                     id="due_date"
-                    value={new Date(state.due_date).toLocaleString('sv-SE').split(' ')[0]}
-                    onChange={handleChange}
+                    value={
+                      `${date.getFullYear().toString()
+                      }-${
+                        (date.getMonth() + 1).toString().padStart(2, 0)
+                      }-${
+                        date.getDate().toString().padStart(2, 0)}`
+                    }
+                    onChange={(e) => {
+                      setDate(new Date(e.target.value));
+                    }}
                     name="due_date"
                     placeholder="請輸入到期日"
                     className="form-control mt-1"
                   />
                 </label>
               </div>
-              <div className="form-group col-md-6 mb-2">
+              <div className="col-md-6 mb-2">
                 <label className="w-100" htmlFor="code">
                   優惠碼
                   <input
@@ -138,6 +134,17 @@ function CouponsModal({
                 </label>
               </div>
             </div>
+            <label className="form-check-label" htmlFor="is_enabled">
+              <input
+                className="form-check-input me-2"
+                type="checkbox"
+                id="is_enabled"
+                name="is_enabled"
+                value={!!state.is_enabled}
+                onChange={handleChange}
+              />
+              Check me out
+            </label>
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" onClick={close}>關閉</button>

@@ -15,6 +15,7 @@ import ErrorPage from './components/ErrorPage';
 import Checkout from './pages/Checkout';
 import Cart from './components/Orders/Cart';
 import FrontLayout from './pages/FrontLayout';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path="coupons" element={<AdminCoupons />} />
         <Route path="orders" element={<AdminOrders />} />
       </Route>
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

@@ -9,6 +9,7 @@ import { Modal } from 'bootstrap';
 import ProductsModal from '../../components/Admin/ProductsModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
+import Pagination from '../../components/Pagination';
 import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
 
 function Products() {
@@ -57,17 +58,17 @@ function Products() {
     productModal.current.hide();
     setPageState({ type: '', data: {} });
   };
-  const column = [{
-    name: '分類',
-    key: 'category',
-  },
-  {
-    name: '名稱',
-    key: 'title',
-  }, {
-    name: '售價',
-    key: 'price',
-  }];
+  // const column = [{
+  //   name: '分類',
+  //   key: 'category',
+  // },
+  // {
+  //   name: '名稱',
+  //   key: 'title',
+  // }, {
+  //   name: '售價',
+  //   key: 'price',
+  // }];
 
   // 刪除
   const [deleteData, setDeleteData] = useState({
@@ -83,7 +84,7 @@ function Products() {
       deleteName: null,
     }));
   };
-  const openDelete = (id, name) => {
+  const openDeleteModal = (id, name) => {
     deleteModal.current.show();
     setDeleteData((preDelete) => ({
       ...preDelete,
@@ -141,27 +142,27 @@ function Products() {
         <table className="table">
           <thead>
             <tr>
-              {
-                column.map((c) => <th scope="col">{c.name}</th>)
-              }
+              <th scope="col">分類</th>
+              <th scope="col">名稱</th>
+              <th scope="col">售價</th>
               <th scope="col">啟用狀態</th>
               <th scope="col">編輯</th>
             </tr>
           </thead>
           <tbody>
             {
-              data.length > 0 && data.map((d) => (
-                <tr>
-                  {
-                    column.map((c) => <td>{d[c.key]}</td>)
-                  }
-                  <td>{d.is_enabled ? '啟用' : '未啟用'}</td>
+              data.length > 0 && data.map((product) => (
+                <tr key={product.id}>
+                  <td>{product.category}</td>
+                  <td>{product.title}</td>
+                  <td>{product.price}</td>
+                  <td>{product.is_enabled ? '啟用' : '未啟用'}</td>
                   <td>
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
                       onClick={() => {
-                        openModal('edit', d);
+                        openModal('edit', product);
                       }}
                     >
                       編輯
@@ -169,7 +170,7 @@ function Products() {
                     <button
                       type="button"
                       className="btn btn-outline-danger btn-sm ms-2"
-                      onClick={() => { openDelete(d.id, d.title); }}
+                      onClick={() => { openDeleteModal(product.id, product.title); }}
                     >
                       刪除
                     </button>
@@ -179,38 +180,7 @@ function Products() {
             }
           </tbody>
         </table>
-        <nav aria-label="Page navigation example">
-          <ul className="pagination">
-            <li className="page-item">
-              <a className={`page-link ${!page.has_pre && 'disabled'}`} href="/" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-            {
-              [...new Array(page.total_pages)].map((_, i) => (
-                <li className="page-item">
-                  <a
-                    className={`page-link ${(i + 1 === page.current_page) && 'active'}`}
-                    href="/"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      changePage(i + 1);
-                    }}
-                  >
-                    {i + 1}
-
-                  </a>
-
-                </li>
-              ))
-            }
-            <li className="page-item">
-              <a className={`page-link ${!page.has_next && 'disabled'}`} href="/" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
+        <Pagination page={page} changePage={changePage} />
       </div>
     </>
   );

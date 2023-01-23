@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import axios from 'axios';
-import 'material-icons/iconfont/material-icons.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import './index.css';
 import './assets/scss/all.scss';
 import {

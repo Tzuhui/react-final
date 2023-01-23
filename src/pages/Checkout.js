@@ -159,9 +159,7 @@ function OrderForm() {
                 type="button"
                 className="text-dark mt-md-0 mt-3 text-decoration-none"
               >
-                <span className="material-icons">
-                  chevron_left
-                </span>
+                <i className="bi bi-chevron-left" />
                 {' '}
                 返回
               </Link>

@@ -62,15 +62,15 @@ function Dashboard() {
         <div className="bg-light" style={{ width: '200px' }}>
           <ul className="list-group list-group-flush">
             <NavLink className="list-group-item list-group-item-action py-3" to="/admin/products">
-              <span className="material-icons">inventory_2</span>
+              <i className="bi bi-cup-fill me-2" />
               產品列表
             </NavLink>
             <NavLink className="list-group-item list-group-item-action py-3" to="/admin/coupons">
-              <span className="material-icons">local_activity</span>
+              <i className="bi bi-ticket-perforated-fill me-2" />
               優惠卷列表
             </NavLink>
             <NavLink className="list-group-item list-group-item-action py-3" to="/admin/orders">
-              <span className="material-icons">receipt_long</span>
+              <i className="bi bi-receipt me-2" />
               訂單列表
             </NavLink>
           </ul>

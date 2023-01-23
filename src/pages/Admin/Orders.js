@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import OrderModal from '../../components/Admin/OrderModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
+import Pagination from '../../components/Pagination';
 import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
 
 function Orders() {
@@ -138,34 +139,34 @@ function Orders() {
           </thead>
           <tbody>
             {
-              data.length > 0 && data.map((d) => (
-                <tr>
-                  <td>{d.id}</td>
-                  <td>{d.is_paid ? <span className="text-success fw-bold">付款完成</span> : '未付款'}</td>
-                  <td>{new Date(d.paid_date * 1000).toLocaleString('sv-DE')}</td>
-                  <td>{d.message}</td>
-                  <td>{d.user?.payment}</td>
+              data.length > 0 && data.map((order) => (
+                <tr key={order.id}>
+                  <td>{order.id}</td>
+                  <td>{order.is_paid ? <span className="text-success fw-bold">付款完成</span> : '未付款'}</td>
+                  <td>{new Date(order.paid_date * 1000).toLocaleString('sv-DE')}</td>
+                  <td>{order.message}</td>
+                  <td>{order.user?.payment}</td>
                   <td>
                     <button
                       className="btn btn-sm btn-outline-primary"
                       type="button"
                       onClick={() => {
-                        openModal('product', d.products);
+                        openModal('product', order.products);
                       }}
                     >
                       查看
                     </button>
                   </td>
                   <td>
-                    {d.user?.name}
-                    {`(${d.user?.email})`}
+                    {order.user?.name}
+                    {`(${order.user?.email})`}
                   </td>
                   <td>
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
                       onClick={() => {
-                        openModal('edit', d);
+                        openModal('edit', order);
                       }}
                     >
                       編輯
@@ -173,7 +174,7 @@ function Orders() {
                     <button
                       type="button"
                       className="btn btn-outline-danger btn-sm ms-2"
-                      onClick={() => { openDelete(d.id); }}
+                      onClick={() => { openDelete(order.id); }}
                     >
                       刪除
                     </button>
@@ -183,38 +184,7 @@ function Orders() {
             }
           </tbody>
         </table>
-        <nav aria-label="Page navigation example">
-          <ul className="pagination">
-            <li className="page-item">
-              <a className={`page-link ${!page.has_pre && 'disabled'}`} href="/" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-            {
-              [...new Array(page.total_pages)].map((_, i) => (
-                <li className="page-item">
-                  <a
-                    className={`page-link ${(i + 1 === page.current_page) && 'active'}`}
-                    href="/"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      changePage(i + 1);
-                    }}
-                  >
-                    {i + 1}
-
-                  </a>
-
-                </li>
-              ))
-            }
-            <li className="page-item">
-              <a className={`page-link ${!page.has_next && 'disabled'}`} href="/" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
+        <Pagination page={page} changePage={changePage} />
       </div>
     </>
   );

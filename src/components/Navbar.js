@@ -43,9 +43,7 @@ function Navbar({ state, getCart }) {
             {/* <a href="#"><i className="fas fa-heart me-5" /></a> */}
             <div className="dropdown">
               <a href="/" className="link-dark position-relative" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                <span className="material-icons" style={{ fontSize: 32 }}>
-                  shopping_bag
-                </span>
+                <i className="bi bi-bag-fill fs-3" />
                 <span className="cart-notify">{state.cartLength}</span>
               </a>
               <ul
@@ -79,9 +77,7 @@ function Navbar({ state, getCart }) {
                               disabled={loading === c.id}
                               onClick={() => removeCart(c)}
                             >
-                              <span className="material-icons">
-                                delete
-                              </span>
+                              <i className="bi bi-x-lg" />
                             </button>
                           </td>
                           <td className="align-middle">

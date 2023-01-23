@@ -5,6 +5,7 @@ import { Modal } from 'bootstrap';
 import CouponsModal from '../../components/Admin/CouponsModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
+import Pagination from '../../components/Pagination';
 import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
 
 function Coupons() {
@@ -42,23 +43,6 @@ function Coupons() {
   useEffect(() => {
     getData();
   }, []);
-  const column = [{
-    name: '標題',
-    key: 'title',
-  },
-  {
-    name: '數量',
-    key: 'is_enabled',
-  }, {
-    name: '折扣（%）',
-    key: 'percent',
-  }, {
-    name: '到期日',
-    key: 'due_date',
-  }, {
-    name: '優惠碼',
-    key: 'code',
-  }];
   const couponModal = useRef('');
   const deleteModal = useRef('');
   useEffect(() => {
@@ -119,10 +103,10 @@ function Coupons() {
         close={handleClose}
         check={handleDelete}
       />
+      <CouponsModal id="couponModal" type={state.type} coupon={state.data} close={closeModal} refresh={getData} />
       <div className="p-3">
         <h3>優惠券列表</h3>
         <hr />
-        <CouponsModal id="couponModal" type={state.type} data={state.data} close={closeModal} refresh={getData} />
         <button
           type="button"
           className="btn btn-primary btn-sm"
@@ -135,25 +119,29 @@ function Coupons() {
         <table className="table">
           <thead>
             <tr>
-              {
-                column.map((c, i) => <th key={`tr_${i + 1}`} scope="col">{c.name}</th>)
-              }
+              <th scope="col">標題</th>
+              <th scope="col">折扣</th>
+              <th scope="col">到期日</th>
+              <th scope="col">優惠碼</th>
+              <th scope="col">是否啟用</th>
               <th scope="col">編輯</th>
             </tr>
           </thead>
           <tbody>
             {
-              data.length > 0 && data.map((d, i) => (
-                <tr key={`coupon_1_${i + 1}`}>
-                  {
-                    column.map((c, index) => <td key={`coupon_2_${index + 1}`}>{d[c.key]}</td>)
-                  }
+              data.length > 0 && data.map((coupon) => (
+                <tr key={coupon.id}>
+                  <td>{coupon.title}</td>
+                  <td>{coupon.percent}</td>
+                  <td>{new Date(coupon.due_date).toLocaleDateString()}</td>
+                  <td>{coupon.code}</td>
+                  <td>{coupon.is_enabled ? '啟用' : '未啟用'}</td>
                   <td>
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"
                       onClick={() => {
-                        openModal('edit', d);
+                        openModal('edit', coupon);
                       }}
                     >
                       編輯
@@ -161,7 +149,7 @@ function Coupons() {
                     <button
                       type="button"
                       className="btn btn-outline-danger btn-sm ms-2"
-                      onClick={() => { openDelete(d.id, d.title); }}
+                      onClick={() => { openDelete(coupon.id, coupon.title); }}
                     >
                       刪除
                     </button>
@@ -171,36 +159,7 @@ function Coupons() {
             }
           </tbody>
         </table>
-        <nav aria-label="Page navigation example">
-          <ul className="pagination">
-            <li className="page-item">
-              <a className={`page-link ${!page.has_pre && 'disabled'}`} href="/" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-              </a>
-            </li>
-            {
-              [...new Array(page.total_pages)].map((_, i) => (
-                <li className="page-item">
-                  <a
-                    className={`page-link ${(i + 1 === page.current_page) && 'active'}`}
-                    href="/"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      changePage(i + 1);
-                    }}
-                  >
-                    {i + 1}
-                  </a>
-                </li>
-              ))
-            }
-            <li className="page-item">
-              <a className={`page-link ${!page.has_next && 'disabled'}`} href="/" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
+        <Pagination page={page} changePage={changePage} />
       </div>
     </>
   );
