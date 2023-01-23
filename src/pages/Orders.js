@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Link, Outlet } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../components/Header';
-import Cart from '../components/Orders/Cart';
-import OrderForm from '../components/Orders/OrderForm';
 import Loading from '../components/Loading';
+import OrderStep from '../components/OrderStep';
 
 function Orders() {
   const [state, setState] = useState({
@@ -26,71 +26,44 @@ function Orders() {
       loading: false,
     }));
   };
+
   useEffect(() => {
     setState((prev) => ({ ...prev, loading: true }));
     getCart();
   }, []);
-  const changePage = (page = 1) => {
-    setState((prev) => ({ ...prev, nowPage: page }));
-  };
-  const postCoupon = (code) => {
-    axios
-      .post(`/v2/api/${process.env.REACT_APP_API_PATH}/coupon`, {
-        data: { code },
-      })
-      .then((res) => {
-        if (res.data.success) {
-          getCart();
-        }
-      });
-  };
+
   return (
     <div>
       <Header />
       <nav className="bg-light p-0">
         <div className="container">
-          <ul className="nav nav-pills nav-fill checkProgress">
-            <li
-              className={`nav-item text-light p-2 text-dark ${
-                state.nowPage === 1 && 'bg-dark text-white'
-              }`}
-            >
-              購物車清單
-            </li>
-            <li
-              className={`nav-item text-light p-2 text-dark ${
-                state.nowPage === 2 && 'bg-dark text-white'
-              }`}
-            >
-              填寫訂單資訊
-            </li>
-          </ul>
+          <OrderStep />
         </div>
       </nav>
       <div className="position-relative">
-        {state.loading ? (
-          <Loading />
-        ) : (
-          <div className="my-4">
-            {state.nowPage === 1 && (
-              <Cart
-                postCoupon={postCoupon}
-                carts={state.carts}
-                total={state.total}
-                finalTotal={state.final_total}
-                changePage={changePage}
+        {
+          state.loading && <Loading />
+        }
+        <div className="my-4">
+          {
+            state.carts.length ? (
+              <Outlet context={{
+                getCart,
+                carts: state.carts,
+                total: state.total,
+                finalTotal: state.final_total,
+              }}
               />
-            )}
-            {state.nowPage === 2 && (
-              <OrderForm
-                carts={state.carts}
-                total={state.total}
-                finalTotal={state.final_total}
-                changePage={changePage}
-              />
-            )}
-          </div>
-        )}
+            ) : (
+              <div className="text-center">
+                購物車沒有商品
+                <br />
+                <Link to="/products" className="btn btn-outline-dark">返回購物</Link>
+              </div>
+            )
+          }
+
+        </div>
       </div>
     </div>
   );

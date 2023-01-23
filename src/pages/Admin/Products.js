@@ -1,5 +1,10 @@
 import axios from 'axios';
-import React, { useEffect, useRef, useContext } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+} from 'react';
 import { Modal } from 'bootstrap';
 import Dashboard from '../../components/Admin/Dashboard';
 import ProductsModal from '../../components/Admin/ProductsModal';
@@ -9,13 +14,13 @@ import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../
 
 function Products() {
   const [, dispatch] = useContext(MessageContext);
-  const [pageState, setPageState] = React.useState({
+  const [pageState, setPageState] = useState({
     type: 'create',
     data: {},
     loading: true,
   });
-  const [data, setData] = React.useState([]);
-  const [page, setPage] = React.useState({
+  const [data, setData] = useState([]);
+  const [page, setPage] = useState({
     category: '',
     current_page: 1,
     has_next: false,
@@ -66,7 +71,7 @@ function Products() {
   }];
 
   // 刪除
-  const [deleteData, setDeleteData] = React.useState({
+  const [deleteData, setDeleteData] = useState({
     open: false,
     deleteId: null,
     deleteName: null,

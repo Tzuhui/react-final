@@ -1,13 +1,49 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect } from 'react';
+import { Link, useOutletContext } from 'react-router-dom';
+import axios from 'axios';
 
-function Cart({
-  carts, total, finalTotal, changePage, postCoupon,
-}) {
+function Cart() {
+  const {
+    getCart, total, finalTotal, carts,
+  } = useOutletContext();
   const [state, setState] = useState({
     price: 0,
     code: '',
+    loadingItem: '',
     result: false,
   });
+
+  const postCoupon = async (code) => {
+    const res = await axios
+      .post(`/v2/api/${process.env.REACT_APP_API_PATH}/coupon`, {
+        data: { code },
+      });
+    if (res.data.success) {
+      getCart();
+    }
+  };
+
+  const updateQuantity = async (data, id) => {
+    setState({ ...state, loadingItem: id });
+    const res = await axios
+      .put(`/v2/api/${process.env.REACT_APP_API_PATH}/cart/${id}`, { data });
+    setState({ ...state, loadingItem: '' });
+
+    if (res.data.success) {
+      getCart();
+    }
+  };
+  const removeCartItem = async (id) => {
+    setState({ ...state, loadingItem: id });
+    const res = await axios
+      .delete(`/v2/api/${process.env.REACT_APP_API_PATH}/cart/${id}`);
+    setState({ ...state, loadingItem: '' });
+
+    if (res.data.success) {
+      getCart();
+    }
+  };
 
   useEffect(() => {
     if (total !== finalTotal) {
@@ -22,26 +58,54 @@ function Cart({
             <h2 className="mt-2">您的餐點</h2>
           </div>
           {
-            carts.map((c) => (
-              <div className="d-flex mt-4 bg-light" key={`cart_${c.product.id}`}>
+            carts.map((cart) => (
+              <div className="d-flex mt-4 bg-light" key={`cart_${cart.product.id}`}>
                 <img
-                  src={c.product.imageUrl}
+                  src={cart.product.imageUrl}
                   alt=""
-                  style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                  style={{ width: '100px', objectFit: 'cover' }}
                 />
                 <div className="w-100 p-3 position-relative">
-                  <p className="mb-0 fw-bold">{c.product.title}</p>
+                  <p className="mb-0 fw-bold">
+                    {cart.product.title}
+                    <button
+                      type="button"
+                      className="btn-close float-end"
+                      disabled={state.loadingItem === cart.id}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        removeCartItem(cart.id);
+                      }}
+                    />
+                  </p>
                   <p className="mb-1 text-muted small">
-                    {c.product.description}
+                    {cart.product.description}
                   </p>
                   <div className="d-flex justify-content-between align-items-center w-100">
-                    <div className="cart-count">
-                      {c.qty}
-                    </div>
+                    <select
+                      name=""
+                      id=""
+                      className="form-select w-25"
+                      value={cart.qty}
+                      disabled={state.loadingItem === cart.id}
+                      onChange={(e) => {
+                        e.preventDefault();
+                        const qty = parseInt(e.target.value, 10);
+                        updateQuantity({
+                          qty,
+                          product_id: cart.product_id,
+                        }, cart.id);
+                      }}
+                    >
+                      {[...Array(20)].map((_, i) => (
+                        // eslint-disable-next-line react/no-array-index-key
+                        <option value={i + 1} key={i}>{i + 1}</option>
+                      ))}
+                    </select>
                     <p className="mb-0 ms-auto">
                       NT$
                       {' '}
-                      {parseInt(c.final_total, 10)}
+                      {parseInt(cart.final_total, 10)}
                     </p>
                   </div>
                 </div>
@@ -81,13 +145,13 @@ function Cart({
               </p>
             </div>
           </div>
-          <button
+          <Link
             type="button"
             className="btn btn-dark btn-block mt-4 rounded-0 py-3"
-            onClick={() => { changePage(2); }}
+            to="/orders/checkout"
           >
             確認餐點正確
-          </button>
+          </Link>
         </div>
       </div>
     </div>

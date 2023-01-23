@@ -19,6 +19,9 @@ import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
 import Orders from './pages/Orders';
 import Success from './pages/Success';
+import ErrorPage from './components/ErrorPage';
+import Checkout from './pages/Checkout';
+import Cart from './components/Orders/Cart';
 
 axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 
@@ -30,6 +33,7 @@ const router = createHashRouter([
   {
     path: '/login',
     element: <Login />,
+    errorElement: <ErrorPage />,
   },
   {
     path: '/products',
@@ -42,6 +46,16 @@ const router = createHashRouter([
   {
     path: '/orders',
     element: <Orders />,
+    children: [
+      {
+        path: 'cart',
+        element: <Cart />,
+      },
+      {
+        path: 'checkout',
+        element: <Checkout />,
+      },
+    ],
   },
   {
     path: '/order/:orderId',
@@ -74,6 +88,8 @@ root.render(
     <RouterProvider router={router} />
   </React.StrictMode>,
 );
+
+// export default ErrorPage;
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

@@ -7,10 +7,19 @@ function Header({ cartChange }) {
     cartLength: 0,
     carts: [],
   });
+  const [loading, setLoading] = useState('');
   const getCart = async () => {
     const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/cart`);
-    setState((prev) => ({ ...prev, cartLength: res.data.data.carts.length }));
-    setState((prev) => ({ ...prev, carts: res.data.data.carts }));
+    setState({
+      cartLength: res.data.data.carts.length,
+      carts: res.data.data.carts,
+    });
+  };
+  const removeCart = async ({ id }) => {
+    setLoading(id);
+    await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/cart/${id}`);
+    getCart();
+    setLoading('');
   };
   useEffect(() => {
     getCart();
@@ -65,7 +74,7 @@ function Header({ cartChange }) {
                     購物車清單
                   </h6>
                   <NavLink
-                    to="/orders"
+                    to="/orders/cart"
                     className="btn btn-sm btn-primary"
                   >
                     我要結帳
@@ -83,6 +92,8 @@ function Header({ cartChange }) {
                             <button
                               type="button"
                               className="btn btn-outline-danger btn-sm"
+                              disabled={loading === c.id}
+                              onClick={() => removeCart(c)}
                             >
                               <span className="material-icons">
                                 delete

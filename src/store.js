@@ -41,7 +41,7 @@ export const handleSuccessMessage = (res, dispatch) => {
 };
 
 export const handleErrorMessage = (error, dispatch) => {
-  dispatch({ type: 'POST_MESSAGE', payload: { type: 'error', title: error.response.status, text: error.response.data.message } });
+  dispatch({ type: 'POST_MESSAGE', payload: { type: 'error', title: error?.response?.status, text: error?.response?.data?.message } });
   setTimeout(() => {
     dispatch({ type: 'CLEAR_MESSAGE' });
   }, 5000);
