@@ -16,8 +16,6 @@ function ProductsModal({
     content: '',
     is_enabled: 0,
     imageUrl: '',
-    imagesUrl: [
-    ],
   });
   useEffect(() => {
     if (type === 'edit') {
@@ -36,8 +34,6 @@ function ProductsModal({
         content: '',
         is_enabled: 0,
         imageUrl: '',
-        imagesUrl: [
-        ],
       }));
     });
   }, [type, data.id]);
@@ -65,6 +61,21 @@ function ProductsModal({
       handleErrorMessage(e, dispatch);
     }
   };
+
+  const uploadFile = async (e) => {
+    // console.log(e.target.files[0]);
+    const uploadedFile = e.target.files[0];
+    const formData = new FormData();
+    formData.append('file-to-upload', uploadedFile);
+    try {
+      const res = await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/upload`, formData);
+      const { imageUrl } = res.data;
+      setState((preState) => ({ ...preState, imageUrl }));
+    } catch (error) {
+      handleErrorMessage(error, dispatch);
+    }
+  };
+
   return (
     <div className="modal fade" id={id} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div className="modal-dialog modal-lg">
@@ -87,7 +98,12 @@ function ProductsModal({
                 <div className="form-group mb-2">
                   <label className="w-100" htmlFor="customFile">
                     或 上傳圖片
-                    <input type="file" id="customFile" className="form-control" />
+                    <input
+                      type="file"
+                      id="customFile"
+                      className="form-control"
+                      onChange={uploadFile}
+                    />
                   </label>
                 </div>
                 <img src={state.imageUrl} alt="" className="img-fluid" />
