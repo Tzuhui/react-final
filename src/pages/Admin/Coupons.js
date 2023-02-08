@@ -1,15 +1,16 @@
-import React, { useEffect, useRef, useContext } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Modal } from 'bootstrap';
+import { useDispatch } from 'react-redux';
 import CouponsModal from '../../components/Admin/CouponsModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
 import Pagination from '../../components/Pagination';
-import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
+import { handleErrorMessage, handleSuccessMessage } from '../../slice/messageSlice';
 
 function Coupons() {
-  const [, dispatch] = useContext(MessageContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [state, setState] = React.useState({
     type: 'create',
@@ -78,9 +79,9 @@ function Coupons() {
         getData();
         deleteModal.current.hide();
       }
-      handleSuccessMessage(res, dispatch);
+      dispatch(handleSuccessMessage(res.data));
     } catch (e) {
-      handleErrorMessage(e, dispatch);
+      dispatch(handleErrorMessage(e));
     }
   };
 

@@ -1,8 +1,6 @@
 import axios from 'axios';
 import React from 'react';
 import { NavLink, useNavigate, Outlet } from 'react-router-dom';
-import { MessageContext, messageReducer, initState } from '../../store';
-import Message from '../../components/Message';
 
 function getCookie(name) {
   const cookieValue = document.cookie
@@ -15,7 +13,6 @@ function getCookie(name) {
 function Dashboard() {
   const token = getCookie('reactFinalToken');
   axios.defaults.headers.Authorization = token;
-  const reducer = React.useReducer(messageReducer, initState);
 
   const navigate = useNavigate();
   const logout = () => {
@@ -29,8 +26,7 @@ function Dashboard() {
   }
 
   return (
-    <MessageContext.Provider value={reducer}>
-      <Message />
+    <>
       <nav className="navbar navbar-expand-lg bg-dark">
         <div className="container-fluid">
           <p className="text-white mb-0">
@@ -77,7 +73,7 @@ function Dashboard() {
         </div>
         <div className="w-100"><Outlet /></div>
       </div>
-    </MessageContext.Provider>
+    </>
   );
 }
 

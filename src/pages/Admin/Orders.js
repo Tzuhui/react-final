@@ -1,15 +1,16 @@
 import axios from 'axios';
-import React, { useEffect, useRef, useContext } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Modal } from 'bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import OrderModal from '../../components/Admin/OrderModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
 import Pagination from '../../components/Pagination';
-import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
+import { handleErrorMessage, handleSuccessMessage } from '../../slice/messageSlice';
 
 function Orders() {
-  const [, dispatch] = useContext(MessageContext);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [state, setState] = React.useState({
     type: 'create',
@@ -77,9 +78,9 @@ function Orders() {
       if (res.data.success) {
         getData();
       }
-      handleSuccessMessage(res, dispatch);
+      dispatch(handleSuccessMessage(res.data));
     } catch (e) {
-      handleErrorMessage(e, dispatch);
+      dispatch(handleErrorMessage(e));
     }
     deleteModal.current.hide();
   };

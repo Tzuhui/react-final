@@ -1,11 +1,12 @@
 import axios from 'axios';
-import React, { useEffect, useContext } from 'react';
-import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { handleErrorMessage, handleSuccessMessage } from '../../slice/messageSlice';
 
 function ProductsModal({
   type, data, refresh, close, id,
 }) {
-  const [, dispatch] = useContext(MessageContext);
+  const dispatch = useDispatch();
   const [state, setState] = React.useState({
     title: '',
     category: '',
@@ -55,10 +56,10 @@ function ProductsModal({
       } else {
         res = await axios.put(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${data.id}`, { data: state });
       }
-      handleSuccessMessage(res, dispatch);
       refresh();
+      dispatch(handleSuccessMessage(res.data));
     } catch (e) {
-      handleErrorMessage(e, dispatch);
+      dispatch(handleErrorMessage(e));
     }
   };
 

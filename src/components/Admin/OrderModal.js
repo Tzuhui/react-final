@@ -1,11 +1,12 @@
 import axios from 'axios';
-import React, { useEffect, useContext, useState } from 'react';
-import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { handleErrorMessage, handleSuccessMessage } from '../../slice/messageSlice';
 
 function OrderModal({
   close, data, refresh, id,
 }) {
-  const [, dispatch] = useContext(MessageContext);
+  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [state, setState] = useState({
     ...data,
@@ -35,10 +36,10 @@ function OrderModal({
       // close();
       refresh();
       setIsLoading(false);
-      handleSuccessMessage(res, dispatch);
+      dispatch(handleSuccessMessage(res.data));
     } catch (e) {
       setIsLoading(false);
-      handleErrorMessage(e, dispatch);
+      dispatch(handleErrorMessage(e));
     }
   };
 

@@ -2,11 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { handleErrorMessage, handleSuccessMessage } from '../../slice/messageSlice';
 
 function Cart() {
   const {
     getCart, total, finalTotal, carts,
   } = useOutletContext();
+  const dispatch = useDispatch();
   const [state, setState] = useState({
     price: 0,
     code: '',
@@ -15,12 +18,18 @@ function Cart() {
   });
 
   const postCoupon = async (code) => {
-    const res = await axios
-      .post(`/v2/api/${process.env.REACT_APP_API_PATH}/coupon`, {
-        data: { code },
-      });
-    if (res.data.success) {
-      getCart();
+    try {
+      const res = await axios
+        .post(`/v2/api/${process.env.REACT_APP_API_PATH}/coupon`, {
+          data: { code },
+        });
+      dispatch(handleSuccessMessage(res.data));
+      if (res.data.success) {
+        getCart();
+      }
+    } catch (e) {
+      setState({ ...state, code: '' });
+      dispatch(handleErrorMessage(e));
     }
   };
 

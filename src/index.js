@@ -7,17 +7,23 @@ import './assets/scss/all.scss';
 import {
   HashRouter,
 } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import reportWebVitals from './reportWebVitals';
 import App from './App';
+import Message from './components/Message';
+import store from './app/store';
 
 axios.defaults.baseURL = process.env.REACT_APP_BASE_URL;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <HashRouter>
-      <App />
-    </HashRouter>
+    <Provider store={store}>
+      <HashRouter>
+        <Message />
+        <App />
+      </HashRouter>
+    </Provider>
   </React.StrictMode>,
 );
 

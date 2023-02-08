@@ -1,11 +1,12 @@
 import axios from 'axios';
-import React, { useEffect, useContext, useState } from 'react';
-import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { handleErrorMessage, handleSuccessMessage } from '../../slice/messageSlice';
 
 function CouponsModal({
   type, coupon, refresh, close, id,
 }) {
-  const [, dispatch] = useContext(MessageContext);
+  const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
   const [state, setState] = useState({
     title: '超級特惠價格',
@@ -51,9 +52,9 @@ function CouponsModal({
       }
       close();
       refresh();
-      handleSuccessMessage(res, dispatch);
+      dispatch(handleSuccessMessage(res.data));
     } catch (e) {
-      handleErrorMessage(e, dispatch);
+      dispatch(handleErrorMessage(e));
     }
   };
   return (

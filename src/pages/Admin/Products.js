@@ -3,17 +3,17 @@ import React, {
   useState,
   useEffect,
   useRef,
-  useContext,
 } from 'react';
 import { Modal } from 'bootstrap';
+import { useDispatch } from 'react-redux';
 import ProductsModal from '../../components/Admin/ProductsModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
 import Pagination from '../../components/Pagination';
-import { MessageContext, handleErrorMessage, handleSuccessMessage } from '../../store';
+import { handleErrorMessage, handleSuccessMessage } from '../../slice/messageSlice';
 
 function Products() {
-  const [, dispatch] = useContext(MessageContext);
+  const dispatch = useDispatch();
   const [pageState, setPageState] = useState({
     type: 'create',
     data: {},
@@ -99,9 +99,9 @@ function Products() {
       if (res.data.success) {
         getData();
       }
-      handleSuccessMessage(res, dispatch);
+      dispatch(handleSuccessMessage(res.data));
     } catch (e) {
-      handleErrorMessage(e, dispatch);
+      dispatch(handleErrorMessage(e));
     }
     deleteModal.current.hide();
   };
