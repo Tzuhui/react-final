@@ -1,10 +1,10 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { handleErrorMessage, handleSuccessMessage } from '../../slice/messageSlice';
+import { handleSuccessMessage } from '../../slice/messageSlice';
+import { useCreateCouponMutation, useUpdateCouponMutation } from '../../services/admin';
 
 function CouponsModal({
-  type, coupon, refresh, close, id,
+  type, coupon, close, id,
 }) {
   const dispatch = useDispatch();
   const [date, setDate] = useState(new Date());
@@ -32,12 +32,14 @@ function CouponsModal({
   }, [type, coupon.id]);
   const handleChange = (e) => {
     const { name, value, checked } = e.target;
-    if (['is_enabled', 'percent'].includes(name)) {
+    if (['is_enabled'].includes(name)) {
       setState((preState) => ({ ...preState, [name]: +checked }));
     } else {
       setState((preState) => ({ ...preState, [name]: value }));
     }
   };
+  const [createMethod] = useCreateCouponMutation();
+  const [updateMethod] = useUpdateCouponMutation();
   const submit = async () => {
     try {
       let res;
@@ -46,15 +48,17 @@ function CouponsModal({
         due_date: new Date(date).getTime(),
       };
       if (type === 'create') {
-        res = await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon`, { data });
+        res = await createMethod(data);
       } else {
-        res = await axios.put(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon/${coupon.id}`, { data });
+        res = await updateMethod({
+          id: coupon.id,
+          data,
+        });
       }
       close();
-      refresh();
       dispatch(handleSuccessMessage(res.data));
     } catch (e) {
-      dispatch(handleErrorMessage(e));
+      console.log('error', e);
     }
   };
   return (
@@ -88,7 +92,7 @@ function CouponsModal({
                 <label className="w-100" htmlFor="percent">
                   折扣（%）
                   <input
-                    type="text"
+                    type="number"
                     value={state.percent}
                     onChange={handleChange}
                     name="percent"

@@ -1,23 +1,21 @@
 import React, { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Modal } from 'bootstrap';
 import { useDispatch } from 'react-redux';
 import CouponsModal from '../../components/Admin/CouponsModal';
 import DeleteModal from '../../components/DeleteModal';
 import Loading from '../../components/Loading';
 import Pagination from '../../components/Pagination';
-import { handleErrorMessage, handleSuccessMessage } from '../../slice/messageSlice';
+import { handleSuccessMessage } from '../../slice/messageSlice';
+import { useGetCouponQuery, useDeleteCouponMutation } from '../../services/admin';
 
 function Coupons() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [state, setState] = React.useState({
     type: 'create',
     data: {},
     loading: true,
   });
-  const [data, setData] = React.useState([]);
   const [page, setPage] = React.useState({
     category: '',
     current_page: 1,
@@ -25,29 +23,11 @@ function Coupons() {
     has_pre: false,
     total_pages: 1,
   });
-  const getData = async (p = 1) => {
-    setState((prev) => ({ ...prev, loading: true }));
-    try {
-      const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupons?page=${p}`);
-      setData(res.data.coupons);
-      setPage(res.data.pagination);
-    } catch (e) {
-      if (e.response.status === 401) {
-        navigate('/login');
-      }
-    }
-    setState((prev) => ({ ...prev, loading: false }));
-  };
-  const changePage = (pageNum) => {
-    getData(pageNum);
-  };
-  useEffect(() => {
-    getData();
-  }, []);
+  const { data: coupons, isLoading } = useGetCouponQuery(page.current_page);
+
   const couponModal = useRef('');
   const deleteModal = useRef('');
   useEffect(() => {
-    getData();
     couponModal.current = new Modal('#couponModal');
     deleteModal.current = new Modal('#deleteModal');
   }, []);
@@ -72,16 +52,16 @@ function Coupons() {
       deleteName: name,
     }));
   };
+  const [deleteMethod, { isLoading: isDeleting }] = useDeleteCouponMutation();
   const handleDelete = async () => {
     try {
-      const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/coupon/${deleteData.deleteId}`, { data: state });
+      const res = await deleteMethod(deleteData.deleteId);
       if (res.data.success) {
-        getData();
         deleteModal.current.hide();
       }
       dispatch(handleSuccessMessage(res.data));
     } catch (e) {
-      dispatch(handleErrorMessage(e));
+      console.log(e);
     }
   };
 
@@ -96,7 +76,7 @@ function Coupons() {
   return (
     <>
       {
-        state.loading && <Loading />
+        (isLoading || isDeleting) && <Loading />
       }
       <DeleteModal
         id="deleteModal"
@@ -104,7 +84,7 @@ function Coupons() {
         close={handleClose}
         check={handleDelete}
       />
-      <CouponsModal id="couponModal" type={state.type} coupon={state.data} close={closeModal} refresh={getData} />
+      <CouponsModal id="couponModal" type={state.type} coupon={state.data} close={closeModal} />
       <div className="p-3">
         <h3>優惠券列表</h3>
         <hr />
@@ -130,7 +110,7 @@ function Coupons() {
           </thead>
           <tbody>
             {
-              data.length > 0 && data.map((coupon) => (
+              coupons?.coupons && coupons?.coupons?.length > 0 && coupons?.coupons.map((coupon) => (
                 <tr key={coupon.id}>
                   <td>{coupon.title}</td>
                   <td>{coupon.percent}</td>
@@ -160,7 +140,15 @@ function Coupons() {
             }
           </tbody>
         </table>
-        <Pagination page={page} changePage={changePage} />
+        <Pagination
+          page={page}
+          changePage={() => {
+            setPage(((prev) => ({
+              ...prev,
+              current_page: page.current_page + 1,
+            })));
+          }}
+        />
       </div>
     </>
   );
