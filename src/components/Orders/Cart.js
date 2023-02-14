@@ -17,7 +17,7 @@ function Cart() {
     result: false,
   });
 
-  const [postCouponMethod, result] = usePostCouponMutation();
+  const [postCouponMethod, { data, error }] = usePostCouponMutation();
   const postCoupon = async (code) => {
     try {
       await postCouponMethod({
@@ -28,7 +28,10 @@ function Cart() {
       dispatch(handleErrorMessage(e));
     }
   };
-  const [updateCartMethod] = useUpdateCartMutation();
+  const [updateCartMethod, {
+    data: updateCartResult,
+    error: updateCartError,
+  }] = useUpdateCartMutation();
   const updateQuantity = async (updateData, id) => {
     setState({ ...state, loadingItem: id });
     await updateCartMethod({
@@ -39,21 +42,27 @@ function Cart() {
     });
     setState({ ...state, loadingItem: '' });
   };
-  const [removeMethod] = useDeleteCartMutation();
+  const [removeMethod, {
+    data: removeCartResult,
+    error: removeCartError,
+  }] = useDeleteCartMutation();
   const removeCartItem = async (id) => {
     setState({ ...state, loadingItem: id });
     await removeMethod(id);
     setState({ ...state, loadingItem: '' });
   };
   useEffect(() => {
-    if (result.isSuccess) {
-      dispatch(handleSuccessMessage(result.data));
+    if (error || updateCartError || removeCartError) {
+      const msg = error || updateCartError || removeCartError;
+      dispatch(handleSuccessMessage(msg.data));
     }
-    if (result.isError) {
-      const { error } = result;
-      dispatch(handleSuccessMessage(error.data));
+  }, [error || updateCartError || removeCartError]);
+  useEffect(() => {
+    if (data || updateCartResult || removeCartResult) {
+      const msg = data || updateCartResult || removeCartResult;
+      dispatch(handleSuccessMessage(msg));
     }
-  }, [result]);
+  }, [data || updateCartResult || removeCartResult]);
 
   useEffect(() => {
     if (total !== finalTotal) {
