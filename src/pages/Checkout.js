@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
 import { Link, useNavigate, useOutletContext } from 'react-router-dom';
+import { usePostOrderMutation, usePostPaidOrderMutation } from '../services/products';
 
 function OrderForm() {
   const {
@@ -14,20 +14,24 @@ function OrderForm() {
     formState: { errors },
   } = useForm();
 
+  const [addOrderMethod] = usePostOrderMutation();
+  const [payOrder] = usePostPaidOrderMutation();
   const submit = async (data) => {
-    const res = await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/order`, {
-      data: {
-        user: {
-          name: data.name,
-          email: data.email,
-          tel: data.tel,
-          address: data.address,
+    const res = await addOrderMethod(
+      {
+        data: {
+          user: {
+            name: data.name,
+            email: data.email,
+            tel: data.tel,
+            address: data.address,
+          },
+          message: data.message,
         },
-        message: data.message,
       },
-    });
+    );
     if (res.data.success) {
-      await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/pay/${res.data.orderId}`);
+      await payOrder(res.data.orderId);
       navigate(`/order/${res.data.orderId}`);
     }
   };

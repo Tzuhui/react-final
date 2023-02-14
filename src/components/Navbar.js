@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import axios from 'axios';
+import { useGetCartQuery, useDeleteCartMutation } from '../services/products';
 
-function Navbar({ state, getCart }) {
+function Navbar() {
+  const { data: carts } = useGetCartQuery();
   const [loading, setLoading] = useState('');
+  const [removeMethod] = useDeleteCartMutation();
   const removeCart = async ({ id }) => {
     setLoading(id);
-    await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/cart/${id}`);
-    getCart();
+    await removeMethod(id);
     setLoading('');
   };
-  useEffect(() => {
-    getCart();
-  }, []);
   return (
     <div className="bg-white sticky-top">
       <div className="container">
@@ -44,7 +42,7 @@ function Navbar({ state, getCart }) {
             <div className="dropdown">
               <a href="/" className="link-dark position-relative" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                 <i className="bi bi-bag-fill fs-3" />
-                <span className="cart-notify">{state.cartLength}</span>
+                <span className="cart-notify">{carts?.data ? carts.data.carts.length : 0}</span>
               </a>
               <ul
                 className="dropdown-menu dropdown-menu-end"
@@ -68,7 +66,7 @@ function Navbar({ state, getCart }) {
                 <table className="table">
                   <tbody>
                     {
-                      state.carts.map((c) => (
+                      carts?.data ? carts.data.carts.map((c) => (
                         <tr key={c.product.id}>
                           <td className="align-middle">
                             <button
@@ -90,7 +88,7 @@ function Navbar({ state, getCart }) {
                             {parseInt(c.final_total, 10)}
                           </td>
                         </tr>
-                      ))
+                      )) : <tr><td>購物車內沒有商品</td></tr>
                     }
                   </tbody>
                 </table>

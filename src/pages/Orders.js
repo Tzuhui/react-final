@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Outlet, useOutletContext } from 'react-router-dom';
-import axios from 'axios';
+import { Link, Outlet } from 'react-router-dom';
 import Loading from '../components/Loading';
 import OrderStep from '../components/OrderStep';
+import { useGetCartQuery } from '../services/products';
 
 function Orders() {
-  const { getNavbarCart } = useOutletContext();
   const [state, setState] = useState({
     nowPage: 1,
     cartLength: 0,
@@ -14,24 +13,19 @@ function Orders() {
     total: 0,
     loading: false,
   });
-  const getCart = async () => {
-    const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/cart`);
-    const d = res.data.data;
-    setState((prev) => ({
-      ...prev,
-      cartLength: d.carts.length,
-      carts: d.carts,
-      final_total: d.final_total,
-      total: d.total,
-      loading: false,
-    }));
-    getNavbarCart();
-  };
-
+  const { data: carts, isLoading } = useGetCartQuery();
   useEffect(() => {
-    setState((prev) => ({ ...prev, loading: true }));
-    getCart();
-  }, []);
+    if (carts && carts?.data) {
+      const cartData = carts.data;
+      setState((prev) => ({
+        ...prev,
+        cartLength: cartData.carts.length,
+        carts: cartData.carts,
+        final_total: cartData.final_total,
+        total: cartData.total,
+      }));
+    }
+  }, [carts]);
 
   return (
     <div>
@@ -42,13 +36,12 @@ function Orders() {
       </nav>
       <div className="position-relative">
         {
-          state.loading && <Loading />
+          isLoading && <Loading />
         }
         <div className="my-4">
           {
             state.carts.length ? (
               <Outlet context={{
-                getCart,
                 carts: state.carts,
                 total: state.total,
                 finalTotal: state.final_total,

@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import axios from 'axios';
 import { NavLink } from 'react-router-dom';
 import Loading from '../components/Loading';
+import { useGetProductsQuery } from '../services/products';
 
 function Products() {
   const categoryList = ['飲料', '甜點', '熱食', '健康便當'];
-  const [data, setData] = React.useState([]);
   const [page, setPage] = React.useState({
     current_page: 1,
     has_next: false,
@@ -16,27 +15,26 @@ function Products() {
     category: '',
     loading: false,
   });
-  const getData = async (p = 1, category = '') => {
-    setState((prev) => ({ ...prev, loading: true }));
-    const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/products?page=${p}&category=${category}`);
-    setData(res.data.products);
-    setPage(res.data.pagination);
-    setState((prev) => ({ ...prev, loading: false }));
-  };
+  const { data: products, isLoading } = useGetProductsQuery({
+    page: page.current_page,
+    category: state.category,
+  });
   const handleCategoryChange = (value) => {
     setState((prev) => ({ ...prev, category: value === '全部' ? '' : value }));
   };
-  const changePage = (pageNum) => {
-    getData(pageNum, state.category);
-  };
-  useEffect(() => {
-    getData(1, state.category);
-  }, [state.category]);
 
+  useEffect(() => {
+    if (products) {
+      setPage((prev) => ({
+        ...prev,
+        ...products.pagination,
+      }));
+    }
+  }, [products]);
   return (
     <>
       {
-        state.loading && <Loading />
+        isLoading && <Loading />
       }
       <nav className="navbar navbar-expand-lg navbar-light justify-content-center border border-start-0 border-end-0 border-top border-bottom">
         <div className="navbar-nav flex-row overflow-auto navbar-custom-scroll">
@@ -55,7 +53,7 @@ function Products() {
       <div className="container mt-md-5 mt-3 mb-7" style={{ minHeight: 'calc(100vh - 300px)' }}>
         <div className="row">
           {
-            data.map((d) => (
+            products && products.products.map((d) => (
               <div className="col-md-3" key={`product_${d.id}`}>
                 <NavLink className="link-dark text-decoration-none" to={`/product/${d.id}`}>
                   <div className="card border-0 mb-4 position-relative position-relative">
@@ -113,7 +111,10 @@ function Products() {
                     href="/"
                     onClick={(e) => {
                       e.preventDefault();
-                      changePage(i + 1);
+                      setPage(((prev) => ({
+                        ...prev,
+                        current_page: i + 1,
+                      })));
                     }}
                   >
                     {i + 1}
@@ -135,23 +136,6 @@ function Products() {
         <div className="container">
           <div className="d-flex align-items-center justify-content-between text-white py-4">
             <p className="mb-0">© 2020 LOGO All Rights Reserved.</p>
-            <ul className="d-flex list-unstyled mb-0 h4">
-              <li>
-                <a href="/" className="text-white mx-3">
-                  <i className="fab fa-facebook" />
-                </a>
-              </li>
-              <li>
-                <a href="/" className="text-white mx-3">
-                  <i className="fab fa-instagram" />
-                </a>
-              </li>
-              <li>
-                <a href="/" className="text-white ms-3">
-                  <i className="fab fa-line" />
-                </a>
-              </li>
-            </ul>
           </div>
         </div>
       </div>

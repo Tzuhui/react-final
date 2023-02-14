@@ -1,50 +1,51 @@
 import React, { useEffect } from 'react';
-import { useParams, NavLink, useOutletContext } from 'react-router-dom';
-import axios from 'axios';
+import { useParams, NavLink } from 'react-router-dom';
+import { skipToken } from '@reduxjs/toolkit/dist/query';
 import Loading from '../components/Loading';
+import { useGetProductsQuery, useGetProductQuery, useAddCartMutation } from '../services/products';
 
 function Products() {
-  const { getNavbarCart } = useOutletContext();
   const { productId } = useParams();
   const [data, setData] = React.useState([]);
   const [recommendData, setRecommendData] = React.useState([]);
   const [state, setState] = React.useState({
-    cartChange: 0,
-    loading: true,
+    category: '',
     qty: 1,
   });
-  const getCategoryData = async (category) => {
-    const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/products?page=1&category=${category}`);
-    const filterNowData = res.data.products.filter((p) => p.id !== productId);
-    setRecommendData(filterNowData.slice(0, 3));
-  };
-  const getData = async (id) => {
-    setState((prev) => ({ ...prev, loading: true }));
-    const res = await axios(`/v2/api/${process.env.REACT_APP_API_PATH}/product/${id}`);
-    setData(res.data.product);
-    getCategoryData(res.data.product.category);
-    setState((prev) => ({ ...prev, loading: false }));
-  };
+  // 取得商品資料
+  const { data: productData, isLoading } = useGetProductQuery(productId || skipToken);
   useEffect(() => {
-    getData(productId);
-  }, [productId]);
+    if (productData) {
+      setData(productData.product);
+      setState((prev) => ({ ...prev, category: productData.product.category }));
+    }
+  }, [productData]);
+
+  // 推薦商品
+  const { data: categoryData } = useGetProductsQuery(productId && state.category !== '' ? {
+    page: 1,
+    category: state.category,
+  } : skipToken);
+  useEffect(() => {
+    if (categoryData) {
+      const filterNowData = categoryData.products.filter((p) => p.id !== productId);
+      setRecommendData(filterNowData.slice(0, 3));
+    }
+  }, [categoryData]);
 
   // 加入購物車
+  const [addCart, result] = useAddCartMutation();
   const addToCart = async () => {
-    setState((prev) => ({ ...prev, cartChange: prev.cartChange + 1, loading: true }));
-    await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/cart`, {
+    await addCart({
       data: {
         product_id: productId,
         qty: parseInt(state.qty, 10),
       },
     });
-    setState((prev) => ({ ...prev, cartChange: true, loading: true }));
-    getData(productId);
-    getNavbarCart();
   };
   return (
     <>
-      { state.loading ? <Loading /> : '' }
+      { isLoading ? <Loading /> : '' }
       <div className="container">
         <div className="row justify-content-between mt-4 mb-7">
           <div className="col-md-6">
@@ -53,7 +54,7 @@ function Products() {
             <div className="my-4">
               <div className="row">
                 {data.imagesUrl.map((i) => (
-                  <div className="col-md-4" key={`detail_${data.id}`}>
+                  <div className="col-md-4" key={`detail_${i}`}>
                     <img src={i || 'https://images.unsplash.com/photo-1502743780242-f10d2ce370f3?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=1916&amp;q=80'} alt="" className="img-fluid mt-4" style={{ height: '150px', objectFit: 'cover' }} />
                   </div>
                 ))}
@@ -99,6 +100,7 @@ function Products() {
               type="button"
               className="btn btn-dark btn-block rounded-0 w-100"
               onClick={addToCart}
+              disabled={result.isLoading}
             >
               加入購物車
             </button>

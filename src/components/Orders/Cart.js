@@ -1,13 +1,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState, useEffect } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
-import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { handleErrorMessage, handleSuccessMessage } from '../../slice/messageSlice';
+import { usePostCouponMutation, useUpdateCartMutation, useDeleteCartMutation } from '../../services/products';
 
 function Cart() {
   const {
-    getCart, total, finalTotal, carts,
+    total, finalTotal, carts,
   } = useOutletContext();
   const dispatch = useDispatch();
   const [state, setState] = useState({
@@ -17,42 +17,43 @@ function Cart() {
     result: false,
   });
 
+  const [postCouponMethod, result] = usePostCouponMutation();
   const postCoupon = async (code) => {
     try {
-      const res = await axios
-        .post(`/v2/api/${process.env.REACT_APP_API_PATH}/coupon`, {
-          data: { code },
-        });
-      dispatch(handleSuccessMessage(res.data));
-      if (res.data.success) {
-        getCart();
-      }
+      await postCouponMethod({
+        data: { code },
+      });
     } catch (e) {
       setState({ ...state, code: '' });
       dispatch(handleErrorMessage(e));
     }
   };
-
-  const updateQuantity = async (data, id) => {
+  const [updateCartMethod] = useUpdateCartMutation();
+  const updateQuantity = async (updateData, id) => {
     setState({ ...state, loadingItem: id });
-    const res = await axios
-      .put(`/v2/api/${process.env.REACT_APP_API_PATH}/cart/${id}`, { data });
+    await updateCartMethod({
+      id,
+      data: {
+        data: updateData,
+      },
+    });
     setState({ ...state, loadingItem: '' });
-
-    if (res.data.success) {
-      getCart();
-    }
   };
+  const [removeMethod] = useDeleteCartMutation();
   const removeCartItem = async (id) => {
     setState({ ...state, loadingItem: id });
-    const res = await axios
-      .delete(`/v2/api/${process.env.REACT_APP_API_PATH}/cart/${id}`);
+    await removeMethod(id);
     setState({ ...state, loadingItem: '' });
-
-    if (res.data.success) {
-      getCart();
-    }
   };
+  useEffect(() => {
+    if (result.isSuccess) {
+      dispatch(handleSuccessMessage(result.data));
+    }
+    if (result.isError) {
+      const { error } = result;
+      dispatch(handleSuccessMessage(error.data));
+    }
+  }, [result]);
 
   useEffect(() => {
     if (total !== finalTotal) {
@@ -62,7 +63,7 @@ function Cart() {
   return (
     <div className="container">
       <div className="row justify-content-center">
-        <div className="col-md-6 bg-white py-5">
+        <div className="col-lg-6 col-md-8 bg-white py-5">
           <div className="d-flex justify-content-between">
             <h2 className="mt-2">您的餐點</h2>
           </div>
